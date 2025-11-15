@@ -6,48 +6,50 @@ function SignUp() {
   return (
     <div className="min-w-sm mx-auto py-8 px-6 bg-black text-white">
       {/* 제목 */}
-      <div className="mb-6">
-        <h1 className="text-lg font-bold mb-2">회원가입</h1>
+      <div className="space-y-2 mb-6">
+        <h1 className="font-bold text-2xl">회원가입</h1>
         <p className="text-sm text-gray-300">회원가입을 위한 정보를 입력해주세요.</p>
       </div>
 
       <form className="">
-        {/* 이메일 입력 */}
-        <div className="">
-          <label htmlFor="email" className="block text-[15px] font-medium">
-            <span className="text-[#f96859] mr-1">*</span> 이메일
-          </label>
-          <div className="flex gap-2">
-            <Input type="email" id="email" placeholder="이메일을 입력하세요." />
-            <Button type="button" className="text-white bg-[#222] px-4 py-1 rounded">
-              본인 인증
-            </Button>
+        {/* 인풋 묶음 */}
+        <div className="space-y-6">
+          {/* 이메일 입력 */}
+          <div className="">
+            <label htmlFor="email" className="block text-[15px] font-medium">
+              <span className="text-[#f96859] mr-1">*</span> 이메일
+            </label>
+            <div className="flex gap-2">
+              <Input type="email" id="email" placeholder="이메일을 입력하세요." />
+              <Button type="button" className="text-white bg-[#222] px-4 py-1 rounded">
+                본인 인증
+              </Button>
+            </div>
           </div>
-        </div>
 
-        {/* 비밀번호 입력 */}
-        <div className="space-y-2">
-          <label htmlFor="password" className="block text-[15px] font-medium">
-            <span className="text-[#f96859] mr-1">*</span> 비밀번호
-          </label>
-          <div className="relative flex items-center">
-            <Input type="password" id="password" placeholder="비밀번호를 입력하세요." disabled />
+          {/* 비밀번호 입력 */}
+          <div className="space-y-2">
+            <label htmlFor="password" className="block text-[15px] font-medium">
+              <span className="text-[#f96859] mr-1">*</span> 비밀번호
+            </label>
+            <div className="">
+              <Input type="password" id="password" placeholder="비밀번호를 입력하세요." disabled />
+            </div>
           </div>
-        </div>
 
-        {/* 비밀번호 확인 */}
-        <div className="">
-          <label htmlFor="confirmPassword" className="block text-[15px] font-medium">
-            <span className="text-[#f96859] mr-1">*</span> 비밀번호 확인
-          </label>
-          <div className="relative flex items-center">
-            <Input type="password" id="confirmPassword" placeholder="비밀번호 확인을 입력하세요." disabled />
-            <button type="button" className="absolute right-2 top-2 text-gray-500" disabled aria-label="비밀번호 표시 토글"></button>
+          {/* 비밀번호 확인 */}
+          <div className="space-y-2">
+            <label htmlFor="confirmPassword" className="block text-[15px] font-medium">
+              <span className="text-[#f96859] mr-1">*</span> 비밀번호 확인
+            </label>
+            <div className="flex items-center">
+              <Input type="password" id="confirmPassword" placeholder="비밀번호 확인을 입력하세요." disabled />
+            </div>
           </div>
         </div>
 
         {/* 필수 동의 */}
-        <div>
+        <div className="mt-4">
           <span className="text-[#f96859] mr-1 text-base">*</span>
           <span className="text-gray-200 font-semibold">필수 동의항목</span>
           <div className="mt-2 space-y-2 border-b border-[#333] pb-2">
@@ -73,7 +75,7 @@ function SignUp() {
         </div>
 
         {/* 선택 동의 */}
-        <div>
+        <div className="mt-4">
           <span className="text-gray-200 font-semibold">선택 동의항목</span>
           <div className="mt-2 space-y-2 border-b border-[#333] pb-2">
             <div className="flex justify-between items-center">

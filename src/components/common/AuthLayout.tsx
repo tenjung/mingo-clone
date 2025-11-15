@@ -1,3 +1,4 @@
+import { Hamburger } from "lucide-react";
 import { Button } from "../ui/button";
 import { Outlet } from "react-router-dom";
 
@@ -5,12 +6,12 @@ function AuthLayout() {
   return (
     <div className="flex flex-col min-h-screen bg-black text-white">
       {/* 헤더-------------------------------- */}
-      <header className="flex items-center justify-center h-20 w-full ">
+      <header className="flex items-center justify-center h-20 w-full px-4">
         <div className="flex items-center justify-between w-full max-w-[1328px]">
           <div className="flex gap-4">
             <img src="src\assets\logo-sm.svg" alt="logo" />
 
-            <nav className="flex gap-2">
+            <nav className="hidden sm:flex gap-2">
               <a href="#">클래스</a>
               <a href="#">배움 노트</a>
               <span>|</span>
@@ -20,8 +21,15 @@ function AuthLayout() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <a href="#">로그인</a>
-            <button>우리가 하는일</button>
+            <a href="/sign-in" className="text-gray-300">
+              로그인
+            </a>
+            <a href="/sign-in" className="hidden sm:flex text-gray-300">
+              우리가 하는일
+            </a>
+            <Button className="sm:hidden flex fill-gray-300">
+              <Hamburger />
+            </Button>
           </div>
         </div>
       </header>
@@ -32,12 +40,12 @@ function AuthLayout() {
       </main>
 
       {/* 푸터---------------------------------- */}
-      <footer className="w-full mt-8 border-t">
+      <footer className="w-full mt-8">
         <div className="max-w-[1328px] mx-auto px-4 py-8">
           {/* 1번재 줄 */}
-          <div className="flex items-start justify-between mb-4">
+          <div className="flex flex-col sm:flex-row items-start justify-between mb-4">
             {/* 좌상단 */}
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-row sm:flex-col gap-4">
               <span className="font-bold text-2xl">
                 나의 학습 여정이, <br />
                 나만의 창작으로 이어지는 플랫폼
@@ -47,13 +55,12 @@ function AuthLayout() {
                   <img src="src/assets/youtube.svg" alt="" className="w-8 h-8" />
                 </Button>
                 <Button>
-                  {" "}
                   <img src="src/assets/threads.svg" alt="" className="w-8 h-8" />
                 </Button>
               </div>
             </div>
-
-            <div className="flex items-start gap-3">
+            {/* 이용약관 */}
+            <div className="flex sm:flex-row items-start gap-3 mt-4 sm:mt-0">
               <a href="">이용약관</a>
               <span>|</span>
               <a href="">개인정보처리방침</a>

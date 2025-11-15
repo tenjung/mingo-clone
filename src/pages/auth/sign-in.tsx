@@ -41,9 +41,9 @@ function SignIn() {
         </div>
 
         {/* 회원가입 */}
-        <p className="text-center text-sm ">
+        <p className="text-center text-sm text-gray-400">
           계정이 없으신가요?{" "}
-          <a href="#" className="underline">
+          <a href="/sign-up" className="underline">
             회원가입
           </a>
         </p>
