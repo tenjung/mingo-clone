@@ -1,54 +1,98 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { NavLink, useNavigate } from "react-router";
+import { z } from "zod";
+
+const formSchema = z.object({
+  email: z.email("올바른 형식의 이메일 주소를 입력해주세요."),
+  password: z.string().min(8, {
+    message: "비밀번호는 최소한 8자 이상으로 작성해주세요.",
+  }),
+});
 
 function SignIn() {
+  const navigate = useNavigate();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  // 로그인
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+  };
+
   return (
-    <main className="flex-1 flex items-center justify-center p-4">
-      <div className="flex flex-col min-w-[400px] p-6 gap-4">
-        {/* 제목 */}
-        <div className="flex flex-col">
-          <h1 className="font-bold text-2xl">로그인</h1>
-          <p className="text-sm text-gray-400">로그인을 위한 정보를 입력해주세요</p>
-        </div>
-
-        {/* 소셜 로그인 */}
-        <div className="flex flex-col gap-4">
-          <Button className="bg-green-500 text-black">네이버 로그인</Button>
-          <Button className="bg-yellow-300 text-black">카카오 로그인</Button>
-          <Button className="bg-neutral-800 text-white">구글 로그인</Button>
-        </div>
-
-        <div className="text-center text-sm text-gray-400">
-          <span className="px-3 bg-black text-gray-200 text-sm font-medium">OR CONTINUE WITH</span>
-        </div>
-
-        {/* 이메일 폼 */}
-        <div className="flex flex-col gap-6">
-          <div className="">
-            <label htmlFor="email" className="font-medium text-sm">
-              이메일
-            </label>
-            <Input type="email" placeholder="이메일을 입력하세요" className="mt-2" />
+    <div className="w-full max-w-[1328px] h-full flex items-center justify-center">
+      <Card className="w-full max-w-sm border-0 bg-transparent">
+        <CardHeader className="gap-0">
+          <CardTitle className="text-lg">로그인</CardTitle>
+          <CardDescription>로그인을 위한 정보를 입력해주세요</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>이메일</FormLabel>
+                    <FormControl>
+                      <Input placeholder="이메일을 입력하세요." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center">
+                      <FormLabel>비밀번호</FormLabel>
+                      <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+                        비밀번호를 잊으셨나요?
+                      </a>
+                    </div>
+                    <FormControl>
+                      <Input type="password" placeholder="비밀번호를 입력하세요." {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex flex-col gap-3">
+                <Button type="submit" className="w-full">
+                  로그인
+                </Button>
+                <Button variant="outline" className="w-full">
+                  <img src="/icons/google.svg" alt="@GOOGLE" className="w-4" />
+                  구글 로그인
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter>
+          <div className="w-full flex items-center justify-center gap-2 -mt-3">
+            <p>계정이 없으신가요?</p>
+            {/* <Button variant={"link"} className="p-0 underline" onClick={() => navigate("/sign-up")}>
+                            회원가입
+                        </Button> */}
+            <NavLink to={"/sign-up"} className="underline underline-offset-4">
+              회원가입
+            </NavLink>
           </div>
-
-          <div>
-            <label htmlFor="password" className="font-medium text-sm">
-              비밀번호
-            </label>
-            <Input type="password" placeholder="비밀번호를 입력하세요." className="mt-2" />
-          </div>
-          <Button className="bg-[#00598680]">로그인</Button>
-        </div>
-
-        {/* 회원가입 */}
-        <p className="text-center text-sm text-gray-400">
-          계정이 없으신가요?{" "}
-          <a href="/sign-up" className="underline">
-            회원가입
-          </a>
-        </p>
-      </div>
-    </main>
+        </CardFooter>
+      </Card>
+    </div>
   );
 }
 

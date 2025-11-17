@@ -1,111 +1,192 @@
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeftIcon } from "lucide-react";
+import {
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+  Input,
+  Separator,
+} from "@/components/ui";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { ArrowLeft, ChevronRight } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { NavLink, useNavigate } from "react-router";
+import { z } from "zod";
+
+const formSchema = z.object({
+  email: z.email("올바른 형식의 이메일 주소를 입력해주세요."),
+  password: z.string().min(8, {
+    message: "비밀번호는 최소한 8자 이상으로 작성해주세요.",
+  }),
+  comfirmPassword: z.string().min(8, { message: "비밀번호 확인을 입력해주세요" }),
+});
 
 function SignUp() {
+  const navigate = useNavigate();
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      comfirmPassword: "",
+    },
+  });
+
+  // 회원가입
+  const onSubmit = (values: z.infer<typeof formSchema>) => {
+    console.log(values);
+  };
+
   return (
-    <div className="min-w-sm mx-auto py-8 px-6 bg-black text-white">
-      {/* 제목 */}
-      <div className="space-y-2 mb-6">
-        <h1 className="font-bold text-2xl">회원가입</h1>
-        <p className="text-sm text-gray-300">회원가입을 위한 정보를 입력해주세요.</p>
-      </div>
+    <div className="w-full max-w-[1328px] h-full flex items-center justify-center">
+      <Card className="w-full max-w-sm border-0 bg-transparent">
+        <CardHeader className="gap-0">
+          <CardTitle className="text-lg">회원가입</CardTitle>
+          <CardDescription>회원가입을 위한 정보를 입력해주세요.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <span className="text-red-500 ">*</span>이메일
+                    </FormLabel>
+                    <div className="flex gap-2">
+                      <FormControl>
+                        <Input placeholder="이메일을 입력하세요." {...field} />
+                      </FormControl>
+                      <Button>본인 인증</Button>
+                    </div>
+                    <FormMessage className="text-sm" />
+                  </FormItem>
+                )}
+              />
+              {/* 비밀번호 */}
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem className="">
+                    <div className="space-y-3">
+                      <FormLabel>
+                        <span className="text-red-500 ">*</span>비밀번호
+                      </FormLabel>
+                      <FormControl className="">
+                        <Input type="password" placeholder="비밀번호를 입력하세요." {...field} />
+                      </FormControl>
 
-      <form className="">
-        {/* 인풋 묶음 */}
-        <div className="space-y-6">
-          {/* 이메일 입력 */}
-          <div className="">
-            <label htmlFor="email" className="block text-[15px] font-medium">
-              <span className="text-[#f96859] mr-1">*</span> 이메일
-            </label>
-            <div className="flex gap-2">
-              <Input type="email" id="email" placeholder="이메일을 입력하세요." />
-              <Button type="button" className="text-white bg-[#222] px-4 py-1 rounded">
-                본인 인증
-              </Button>
-            </div>
+                      <FormMessage className="text-sm" />
+                    </div>
+                  </FormItem>
+                )}
+              />
+              {/* 비밀번호 확인 */}
+              <FormField
+                control={form.control}
+                name="comfirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      <span className="text-red-500">*</span>비밀번호 확인
+                    </FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="비밀번호 확인을 입력하세요." {...field} />
+                    </FormControl>
+                    <FormMessage className="text-sm" />
+                  </FormItem>
+                )}
+              />
+              {/* 동의 체크 */}
+              <div className="space-y-6">
+                {/* 필수 동의항목 */}
+                <div>
+                  <div className="flex items-center mb-2">
+                    <span className="text-red-500 mr-1">*</span>
+                    <span className="font-bold">필수 동의항목</span>
+                  </div>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Checkbox className="mr-2" />
+                        <span>서비스 이용약관 동의</span>
+                      </div>
+                      <button className="text-sm text-gray-300 flex items-center hover:underline">
+                        자세히{" "}
+                        <span className="ml-1">
+                          <ChevronRight className="w-4" />
+                        </span>
+                      </button>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <Checkbox className="mr-2" />
+                        <span>개인정보 수집 및 이용동의</span>
+                      </div>
+                      <button className="text-sm text-gray-300 flex items-center hover:underline">
+                        자세히{" "}
+                        <span className="ml-1">
+                          <ChevronRight className="w-4" />
+                        </span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <Separator />
+                {/* 선택 동의 */}
+                <div>
+                  <div className="font-bold mb-2">선택 동의항목</div>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center">
+                      <Checkbox className="mr-2" />
+                      <span>마케팅 및 광고 수신 동의</span>
+                    </div>
+                    <button className="text-sm text-gray-300 flex items-center hover:underline">
+                      자세히{" "}
+                      <span className="ml-1">
+                        <ChevronRight className="w-4" />
+                      </span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+              {/* 회원가입 버튼*/}
+              <div className="flex gap-2">
+                <Button className="p-0 underline bg-gray-900 text-white" onClick={() => navigate("/sign-in")}>
+                  <ArrowLeft />
+                </Button>
+                <Button type="submit" className="flex-1 w-full bg-green-800 text-white font-bold">
+                  회원가입
+                </Button>
+              </div>
+            </form>
+          </Form>
+        </CardContent>
+        <CardFooter>
+          <div className="w-full flex items-center justify-center gap-2 -mt-3">
+            <p>이미 계정이 있으신가요?</p>
+
+            <NavLink to={"/sign-in"} className="underline underline-offset-4">
+              로그인
+            </NavLink>
           </div>
-
-          {/* 비밀번호 입력 */}
-          <div className="space-y-2">
-            <label htmlFor="password" className="block text-[15px] font-medium">
-              <span className="text-[#f96859] mr-1">*</span> 비밀번호
-            </label>
-            <div className="">
-              <Input type="password" id="password" placeholder="비밀번호를 입력하세요." disabled />
-            </div>
-          </div>
-
-          {/* 비밀번호 확인 */}
-          <div className="space-y-2">
-            <label htmlFor="confirmPassword" className="block text-[15px] font-medium">
-              <span className="text-[#f96859] mr-1">*</span> 비밀번호 확인
-            </label>
-            <div className="flex items-center">
-              <Input type="password" id="confirmPassword" placeholder="비밀번호 확인을 입력하세요." disabled />
-            </div>
-          </div>
-        </div>
-
-        {/* 필수 동의 */}
-        <div className="mt-4">
-          <span className="text-[#f96859] mr-1 text-base">*</span>
-          <span className="text-gray-200 font-semibold">필수 동의항목</span>
-          <div className="mt-2 space-y-2 border-b border-[#333] pb-2">
-            <div className="flex justify-between items-center">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" />
-                서비스 이용약관 동의
-              </label>
-              <button type="button" className="text-xs text-gray-400 flex items-center gap-1">
-                자세히 <span>›</span>
-              </button>
-            </div>
-            <div className="flex justify-between items-center">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" />
-                개인정보 수집 및 이용동의
-              </label>
-              <button type="button" className="text-xs text-gray-400 flex items-center gap-1">
-                자세히 <span>›</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* 선택 동의 */}
-        <div className="mt-4">
-          <span className="text-gray-200 font-semibold">선택 동의항목</span>
-          <div className="mt-2 space-y-2 border-b border-[#333] pb-2">
-            <div className="flex justify-between items-center">
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" />
-                마케팅 및 광고 수신 동의
-              </label>
-              <button type="button" className="text-xs text-gray-400 flex items-center gap-1">
-                자세히 <span>›</span>
-              </button>
-            </div>
-          </div>
-        </div>
-        {/* 회원가입 */}
-        <div className="flex gap-2 mt-6">
-          <Button type="button" className="py-2 rounded text-white">
-            <ArrowLeftIcon className="" />
-          </Button>
-          <Button type="submit" className="flex-1 py-2 rounded bg-green-950 text-white font-semibold">
-            회원가입
-          </Button>
-        </div>
-
-        <div className="mt-4 text-center text-sm text-gray-400">
-          이미 계정이 있으신가요?
-          <a href="/sign-in" className="underline ml-1 text-gray-200">
-            로그인
-          </a>
-        </div>
-      </form>
+        </CardFooter>
+      </Card>
     </div>
   );
 }

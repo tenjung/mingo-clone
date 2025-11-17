@@ -1,14 +1,5 @@
-import AuthLayout from "./components/common/AuthLayout";
-import { Button } from "./components/ui/button";
-import SignIn from "./pages/auth/sign-in";
-import { defineConfig } from "eslint/config";
-
 function App() {
-  return (
-    <div>
-      <AuthLayout />
-    </div>
-  );
+  return <main className="w-full flex-1">메인 페이지</main>;
 }
 
 export default App;
