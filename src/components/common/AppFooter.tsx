@@ -4,11 +4,11 @@ function AppFooter() {
   return (
     <footer className="w-full flex items-center justify-center p-6 pb-20 bg-[#121212]">
       <div className="w-full max-w-[1328px] flex flex-col items-center justify-center gap-6">
-        <div className="w-full flex items-start justify-between">
-          <div className="flex flex-col gap-4">
+        <div className="w-full flex flex-col items-start justify-between gap-6 md:flex-row">
+          <div className="w-full flex items-start justify-between gap-4 md:w-fit md:flex-col ">
             <div className="flex flex-col">
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">나의 학습 여정이,</h3>
-              <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">나만의 창작으로 이어지는 플랫폼</h3>
+              <h3 className="scroll-m-20 text-base md:text-2xl font-semibold tracking-tight">나의 학습 여정이,</h3>
+              <h3 className="scroll-m-20 text-base md:text-2xl font-semibold tracking-tight">나만의 창작으로 이어지는 플랫폼</h3>
             </div>
             <div className="flex items-center gap-2">
               <Button variant="secondary" size={"icon"}>
@@ -28,7 +28,7 @@ function AppFooter() {
           </div>
         </div>
         <Separator />
-        <div className="w-full flex items-center justify-between">
+        <div className="w-full flex flex-col items-start gap-20 md:flex-row md:justify-between">
           <div className="flex flex-col gap-4">
             <p className="text-base font-semibold">고객센터</p>
             <div className="flex flex-col gap-13">

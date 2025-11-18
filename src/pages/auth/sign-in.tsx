@@ -1,19 +1,24 @@
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
+import supabase from "@/utils/supabase"; // Supabase 불러오기
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
+//유효성 검사를 쉽게 하기위해 zod를 사용하여 불러옴
 import { NavLink, useNavigate } from "react-router";
-import { z } from "zod";
+import { toast } from "sonner"; //경고창 알림 메세지
+import { z } from "zod"; //zod 라이브러리 폼 유효성검사
 
+//zod를 사용하여 각 폼입력값의 유효성 검사
 const formSchema = z.object({
-  email: z.email("올바른 형식의 이메일 주소를 입력해주세요."),
+  email: z.email("올바른 형식의 이메일 주소를 입력해주세요."), //이메일 형식인지 확인
   password: z.string().min(8, {
+    // 비밀번호는 최소 8자 이상
     message: "비밀번호는 최소한 8자 이상으로 작성해주세요.",
   }),
 });
 
 function SignIn() {
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -22,9 +27,33 @@ function SignIn() {
     },
   });
 
-  // 로그인
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  // 일반 로그인 폼제출시 실행됨
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    try {
+      //로그인 시도
+      const {
+        data: { user, session },
+        error: signInError,
+      } = await supabase.auth.signInWithPassword({
+        email: values.email,
+        password: values.password,
+      });
+      // 로그인 실패시 메세지
+      if (signInError) {
+        toast.error(signInError.message === "Invalid login credentials" ? "입력하신 정보가 일치하지 않습니다." : "로그인 중 오류가 발생하였습니다.");
+        return;
+      }
+
+      // user와 session 두 값 모두 null이 아닐 경우에만 로그인이 완료되었음을 의미
+      if (user && session) {
+        // 로그인 성공 시,
+        toast.success("로그인을 완료하였습니다.");
+        navigate("/"); // => 메인 페이지로 리디렉션
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
 
   return (

@@ -16,36 +16,87 @@ import {
   Input,
   Separator,
 } from "@/components/ui";
+import supabase from "@/utils/supabase"; //회원가입을 위해 supabase 불러오기
 
-import { zodResolver } from "@hookform/resolvers/zod";
+import { zodResolver } from "@hookform/resolvers/zod"; //유효성 검사를 쉽게 하기위해 zod를 사용하여 불러옴
 
 import { ArrowLeft, ChevronRight } from "lucide-react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { NavLink, useNavigate } from "react-router";
+import { toast } from "sonner";
 import { z } from "zod";
 
-const formSchema = z.object({
-  email: z.email("올바른 형식의 이메일 주소를 입력해주세요."),
-  password: z.string().min(8, {
-    message: "비밀번호는 최소한 8자 이상으로 작성해주세요.",
-  }),
-  comfirmPassword: z.string().min(8, { message: "비밀번호 확인을 입력해주세요" }),
-});
+const formSchema = z
+  .object({
+    email: z.email({
+      //이메일 형식 검사
+      error: "올바른 형식의 이메일 주소를 입력해주세요.",
+    }),
+    password: z.string().min(8, {
+      error: "비밀번호는 최소 8자 이상이어야 합니다.",
+    }),
+    confirmPassword: z.string().min(8, {
+      //비밀번호가 최소 8자이상
+      error: "비밀번호 확인을 입력해주세요.",
+    }),
+  }) //두 비밀번호가 맞는지 추가로 검사
+  .superRefine(({ password, confirmPassword }, ctx) => {
+    if (password !== confirmPassword) {
+      ctx.addIssue({
+        code: "custom",
+        message: "비밀번호가 일치하지 않습니다.",
+        path: ["confirmPassword"],
+      });
+    }
+  });
 
 function SignUp() {
+  //페이지 이동을 위해 useNavigate 훅 사용
   const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
-      comfirmPassword: "",
+      confirmPassword: "",
     },
   });
 
-  // 회원가입
-  const onSubmit = (values: z.infer<typeof formSchema>) => {
-    console.log(values);
+  //필수동의
+  const [serviceAgreed, setServiceAgreed] = useState<boolean>(true); // 서비스 이용약관 동의 여부
+  const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(true); // 개입정보 수집 및 이용동의 여부
+
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("values: ", values);
+
+    if (!serviceAgreed || !privacyAgreed) {
+      toast.warning("잠깐! 필수 동의가 아직 완료되지 않았어요!");
+      return;
+    }
+    // subaase로 회원가입 시도
+    try {
+      const {
+        data: { user, session },
+        error: supabaseError,
+      } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+      });
+      if (supabaseError) {
+        toast.error(supabaseError.message === "user aaa" ? "이미가입된" : "회원가입 중 오류");
+        return;
+      }
+      //user와 session 두값 모두 null이 아닐 경우에만 회원가입 처리
+      if (user && session) {
+        //회원가입 성공시,
+        toast.success("회원가입을 완료하였습니다.");
+        navigate("/sign-in"); // 로그인 페이지로 리디렉션
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
 
   return (
@@ -98,7 +149,7 @@ function SignUp() {
               {/* 비밀번호 확인 */}
               <FormField
                 control={form.control}
-                name="comfirmPassword"
+                name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>
