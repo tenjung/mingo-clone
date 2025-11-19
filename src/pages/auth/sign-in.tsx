@@ -1,4 +1,5 @@
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
+import useAuthStore from "@/store/authStore";
 import supabase from "@/utils/supabase"; // Supabase 불러오기
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,6 +19,7 @@ const formSchema = z.object({
 });
 
 function SignIn() {
+  const { setSession } = useAuthStore(); // Zustand 스토어에서 setSession 가져오기
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -30,7 +32,6 @@ function SignIn() {
   // 일반 로그인 폼제출시 실행됨
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
     try {
-      //로그인 시도
       const {
         data: { user, session },
         error: signInError,
@@ -38,24 +39,23 @@ function SignIn() {
         email: values.email,
         password: values.password,
       });
-      // 로그인 실패시 메세지
+
       if (signInError) {
         toast.error(signInError.message === "Invalid login credentials" ? "입력하신 정보가 일치하지 않습니다." : "로그인 중 오류가 발생하였습니다.");
         return;
       }
 
-      // user와 session 두 값 모두 null이 아닐 경우에만 로그인이 완료되었음을 의미
       if (user && session) {
-        // 로그인 성공 시,
+        // Zustand 스토어에 세션 정보 저장
+        setSession({ user, session }); // user와 session 모두 저장
         toast.success("로그인을 완료하였습니다.");
-        navigate("/"); // => 메인 페이지로 리디렉션
+        navigate("/");
       }
     } catch (error) {
       console.log(error);
       throw error;
     }
   };
-
   return (
     <div className="w-full max-w-[1328px] h-full flex items-center justify-center">
       <Card className="w-full max-w-sm border-0 bg-transparent">
