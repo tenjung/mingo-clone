@@ -4,17 +4,7 @@ import { HotTopic, NewTopic } from "./components/topic";
 import { useNavigate } from "react-router";
 import useAuthStore from "./store/authStore";
 import { toast } from "sonner";
-
-const CATEGORIES = [
-  // { icon: List, label: "전체" },
-  { icon: Lightbulb, label: "인문학" },
-  { icon: Rocket, label: "스타트업" },
-  { icon: CodeXml, label: "IT·프로그래밍" },
-  { icon: Goal, label: "서비스·전략 기획" },
-  { icon: ChartNoAxesCombined, label: "마케팅" },
-  { icon: DraftingCompass, label: "디자인·일러스트" },
-  { icon: Footprints, label: "자기계발" },
-];
+import { CATEGORIES } from "./constants";
 
 function App() {
   const navigate = useNavigate();
@@ -72,11 +62,11 @@ function App() {
         </section>
         {/* HOT 토픽 */}
 
-        <section>
-          <div className="flex flex-col gap-6">
+        <section className="flex flex-col gap-6">
+          <div className="flex flex-col">
             <div className="flex items-center gap-2">
-              <img src="/gifs/writing-hand.gif" alt="@WRITING-HAND" className="w-7 mb-2" />
-              <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">NEW 토픽</h4>
+              <img src="/gifs/writing-hand.gif" alt="@WRITING-HAND_GIFS" className="w-7 mb-2" />
+              <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">HOT 토픽</h4>
             </div>
             <p className="text-neutral-500 text-base">지금 가장 주목받는 주제들을 살펴보고, 다양한 관점의 인사이트를 얻어보세요.</p>
           </div>
@@ -89,11 +79,11 @@ function App() {
           </div>
         </section>
         {/* NEW 토픽 */}
-        <section>
+        <section className="flex flex-col gap-6">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <img src="/gifs/writing-hand.gif" alt="@WRITING-HAND" className="w-7 mb-2" />
-              <h4 className="scroll-m-20 text-2xl font-semibold tracking-tight">NEW 토픽</h4>
+              <h4 className="scroll-m-20 text-xl font-semibold tracking-tight">NEW 토픽</h4>
             </div>
             <p className="text-neutral-500 text-base">새로운 시선으로, 새로운 이야기를 시작하세요. 지금 바로 당신만의 토픽을 작성해보세요.</p>
           </div>
