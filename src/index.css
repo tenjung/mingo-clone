@@ -110,6 +110,25 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+/* 블랙노트 css가 적용안되서 우선순위로 적용 !important */
+.dark .bn-root,
+.dark .bn-container,
+.dark .mantine-Paper-root {
+  /* 배경색  */
+  --bn-editor-background-color: #212121 !important;
+
+  /* 텍스트 색상  */
+  --bn-editor-text-color: var(--foreground) !important;
+
+  /* 툴바/메뉴 배경  */
+  --bn-menu-background-color: var(--card) !important;
+  --bn-menu-text-color: var(--card-foreground) !important;
+
+  /* 기타 UI 요소  */
+  --bn-colors-editor-background: #212121 !important;
+  --bn-colors-editor-text: var(--foreground) !important;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

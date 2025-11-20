@@ -10,3 +10,4 @@ export { Label } from "./label";
 export { Separator } from "./separator";
 export { Toaster } from "./sonner";
 export { Spinner } from "./spinner";
+export { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectScrollDownButton, SelectScrollUpButton, SelectSeparator, SelectTrigger, SelectValue } from "./select";
