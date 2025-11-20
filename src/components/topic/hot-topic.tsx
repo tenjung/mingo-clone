@@ -3,7 +3,7 @@ import { UserInfo } from "./user-info";
 
 function HotTopic() {
   return (
-    <Card className="p-0 border-0 bg-transparent gap-4">
+    <Card className="p-0 border-0 bg-transparent">
       <div className="relative">
         <img src="images/bg-sample.webp" alt="@BG-SAMPLE" className="h-70 rounded-lg" />
         <p className="absolute bottom-4 z-10 px-4 font-semibold text-xl line-clamp-2">

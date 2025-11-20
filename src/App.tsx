@@ -1,14 +1,15 @@
+import useAuthStore from "./store/authStore";
 import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
 import { useNavigate } from "react-router";
-import useAuthStore from "./store/authStore";
+
 import { toast } from "sonner";
 import { CATEGORIES } from "./constants";
 
 function App() {
   const navigate = useNavigate();
-  const { session } = useAuthStore();
+  const { session, setSession } = useAuthStore();
 
   const moveToPage = () => {
     if (!session) {

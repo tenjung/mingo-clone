@@ -6,7 +6,7 @@ function CreateTopic() {
   const navigate = useNavigate();
   return (
     <div className="w-full max-w-6xl mx-auto flex flex-col min-h-[600px]">
-      <form className="flex flex-1 gap-8 py-10">
+      <form action="">
         {/* Step 1*/}
 
         <section className="flex-1 flex flex-col gap-6">
@@ -23,6 +23,7 @@ function CreateTopic() {
             </label>
             <input type="text" className="w-full p-4 rounded bg-neutral-900 text-white" placeholder="토픽 제목을 입력하세요." required />
           </div>
+
           <div>
             <label className=" block mb-2">
               <div className="flex items-center gap-1 ">
@@ -40,6 +41,7 @@ function CreateTopic() {
             <span>카테고리 및 썸네일 등록</span>
           </div>
           <Separator />
+          {/* 카테고리 선택 */}
           <div>
             <label className=" block mb-2">
               <div className="flex items-center gap-1 ">
@@ -59,10 +61,11 @@ function CreateTopic() {
               <option value="자기계발">자기계발</option>
             </select>
           </div>
+
           <div>
             <label className=" block mb-2">
               <div className="flex items-center gap-1 ">
-                <Asterisk size={14} className="text-red-400" /> <span className="">카테고리</span>
+                <Asterisk size={14} className="text-red-400" /> <span className="">사진</span>
               </div>
             </label>
             <div className="flex flex-col items-center gap-2">
@@ -73,24 +76,24 @@ function CreateTopic() {
             </div>
           </div>
         </section>
-      </form>
 
-      {/* 버튼 영역 */}
-      <div className="flex justify-center gap-4 pb-8">
-        <Button
-          onClick={() => navigate("/")} // 홈페이지로 돌아감
-          className="bg-neutral-700 text-white px-6 py-2 rounded"
-        >
-          취소
-        </Button>
-        <Button
-          type="submit"
-          className="bg-amber-600 text-black px-6 py-2 rounded font-bold"
-          // 저장 연결 필요
-        >
-          저장
-        </Button>
-      </div>
+        {/* 버튼 영역 */}
+        <div className="flex justify-center gap-4 pb-8">
+          <Button
+            onClick={() => navigate("/")} // 홈페이지로 돌아감
+            className="bg-neutral-700 text-white px-6 py-2 rounded"
+          >
+            취소
+          </Button>
+          <Button
+            type="submit"
+            className="bg-amber-600 text-black px-6 py-2 rounded font-bold"
+            // 저장 연결 필요
+          >
+            저장
+          </Button>
+        </div>
+      </form>
     </div>
   );
 }
