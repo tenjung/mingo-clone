@@ -4,10 +4,6 @@ import { AppTextEditor } from "@/components/common";
 import { Button, Card, Input, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, Separator } from "@/components/ui";
 import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
 
-// 잘되나 로그체크
-const { data, error } = await supabase.from("topics").insert([{ title, content, category, thumbnail: thumbnailUrl }]);
-console.log("DB INSERT:", data, error);
-
 function CreateTopic() {
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState(null);
@@ -80,6 +76,10 @@ function CreateTopic() {
           thumbnail: thumbnailUrl,
         },
       ]);
+
+    // 잘되나 로그체크
+    const { data, error } = await supabase.from("topics").insert([{ title, content, category, thumbnail: thumbnailUrl }]);
+    console.log("DB INSERT:", data, error);
   };
 
   return (
