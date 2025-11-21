@@ -3,30 +3,83 @@ import { useRef, useState } from "react";
 import { AppTextEditor } from "@/components/common";
 import { Button, Card, Input, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, Separator } from "@/components/ui";
 import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
+import { nanoid } from "zod";
+import { toast } from "sonner";
+import { useParams } from "react-router";
 
 function CreateTopic() {
+  const { topic_id } = useParams();
+
   const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState(null);
   const [category, setCategory] = useState<string>("");
   const [thumbnail, setThumbnail] = useState<File | string | null>(null);
-  // => File 타입의 원본 데이터를 받음
-  // => Supabase의 이미지만 관리하는 Storage에 전달받은 File을 저장 => URL 형식으로
-  // => Supabase 데이터베이스에 저장 (in topics 테이블의 thumbnail 컬럼)
+  // 저장버튼 누르면 실행됨
+  const handleSave = async () => {
+    if (!title && !category && !thumbnail && !content) {
+      toast.warning("입력되지 않은 항목이 있습니다. 필수값을 입력해주세요.");
+      return;
+    }
+
+    // 1. 파일 업로드 시, Supabase의 Storage 즉, bucket 폴더에 이미지를 먼저 업로드 한 후
+    // 이미지가 저장된 bucket 폴더의 경로 URL 주소를 우리가 관리하고 있는 Topics 테이블 thumbnail 컬럼에 문자열 형태
+    // 즉, string 타입(DB에서는 text 타입)으로 저장한다.
+
+    let thumbnailUrl: string | null = null;
+
+    // 최초로 썸네일을 DB에 저장할 경우 or 새로운 썸네일을 업로드할 경우
+    if (thumbnail && thumbnail instanceof File) {
+      // 썸네일 이미지를 storage에 업로드
+      const fileExt = thumbnail.name.split(".").pop(); // png
+      const fileName = `${nanoid()}.${fileExt}`;
+      const filePath = `topics/${fileName}`;
+
+      const { error: fileUploadError } = await supabase.storage.from("files").upload(filePath, thumbnail);
+
+      if (fileUploadError) throw fileUploadError;
+
+      const { data } = supabase.storage.from("files").getPublicUrl(filePath);
+
+      if (!data) {
+        toast.error("해당 파일의 Public URL 조회를 실패하였습니다.");
+        throw new Error("해당 파일의 Public URL 조회를 실패하였습니다.");
+      }
+      thumbnailUrl = data.publicUrl;
+    } else if (typeof thumbnail === "string") {
+      thumbnailUrl = thumbnail; // 기존 이미지를 유지
+    }
+
+    const { data, error } = await supabase
+      .from("topics")
+      .update([{ title, category, thumbnail: thumbnailUrl, content, status: "TEMP" }])
+      .eq("id", topic_id)
+      .select();
+
+    if (error) throw error;
+    if (data) {
+      toast.success("작성 중인 토픽을 저장하였습니다.");
+      return;
+    }
+  };
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // 파일 변화 감지 및 상태값 할당
   const handleChangeFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // if (event.target.files) {
+    //     setThumbnail(event.target.files[0]);
+    // } else {
+    //     setThumbnail(null);
+    // }
     setThumbnail(event.target.files?.[0] ?? null);
 
-    console.log("event.target.files: ", event.target.files);
-    console.log("event.target.value: ", event.target.value);
+    // console.log("event.target.files: ", event.target.files);
+    // console.log("event.target.value: ", event.target.value);
 
     // 동일 파일 선택이 불가능할 수 있으므로 event.target.value를 초기화
     // 브라우저는 <input type="file">의 value가 변경되었을 때만 change를 발생시킴
     event.target.value = "";
   };
-
   // 이미지 미리보기
   const handleRenderPreview = () => {
     if (typeof thumbnail === "string") {
@@ -43,43 +96,11 @@ function CreateTopic() {
     // 썸네일이 설정되지 않은 경우에는 기본 이미지 아이콘을 보여줍니다.
     return (
       <div className="w-full aspect-video flex items-center justify-center rounded-md bg-card">
-        <Button className="p-25" variant={"ghost"} size={"icon"} onClick={() => fileInputRef.current?.click()}>
+        <Button variant={"ghost"} size={"icon"} onClick={() => fileInputRef.current?.click()}>
           <Image />
         </Button>
       </div>
     );
-  };
-
-  // 저장버튼 누르면 실행됨
-  const handleSave = async () => {
-    let thumbnailUrl = null;
-
-    if (thumbnail instanceof File) {
-      const fileName = `${Date.now()}_${thumbnail.name}`; // 파일명 중복 방지
-      const { error } = await supabase.storage
-        .from("topics-thumbnails") // 본인 storage 버킷명
-        .upload(fileName, thumbnail);
-
-      if (!error) {
-        thumbnailUrl = supabase.storage.from("topics-thumbnails").getPublicUrl(fileName).data.publicUrl;
-      } // url을 얻어서 DB에 넣어야 나중에 이미지를 보여줄수 있음
-    }
-
-    // topics 테이블에 데이터 insert
-    await supabase
-      .from("topics") // 테이블명
-      .insert([
-        {
-          title,
-          content,
-          category,
-          thumbnail: thumbnailUrl,
-        },
-      ]);
-
-    // 잘되나 로그체크
-    const { data, error } = await supabase.from("topics").insert([{ title, content, category, thumbnail: thumbnailUrl }]);
-    console.log("DB INSERT:", data, error);
   };
 
   return (

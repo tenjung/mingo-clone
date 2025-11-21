@@ -25,7 +25,7 @@ createRoot(document.getElementById("root")!).render(
           {/* USER */}
           <Route path="/user/:id/profile" element={<UserProfile />} />
           {/* TOPIC */}
-          <Route path="/create-topic" element={<CreateTopic />} />
+          <Route path="/topic/:topic_id/create" element={<CreateTopic />} />
           <Route path="/topic/:id" element={<DetailTopic />} />
           <Route path="/topic/:id/edit" element={<UpdateTopic />} />
         </Route>

@@ -1,4 +1,4 @@
-import useAuthStore from "./store/authStore";
+import { useAuthStore } from "@/store/authStore";
 import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
@@ -6,19 +6,35 @@ import { useNavigate } from "react-router";
 
 import { toast } from "sonner";
 import { CATEGORIES } from "./constants";
+import supabase from "./utils/supabase";
 
 function App() {
   const navigate = useNavigate();
-  const { session, setSession } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
 
-  const moveToPage = () => {
-    if (!session) {
+  const moveToPage = async () => {
+    // 1. 로그인 여부 체크
+    if (!user) {
       toast.warning("토픽 작성은 로그인 후 이용 가능합니다.");
       return;
     }
-    navigate("/create-topic");
-  };
 
+    // 토픽 작성하기 버튼 클릭 시, (빈)토픽 생성
+    const { data, error } = await supabase
+      .from("topics")
+      .insert([{ author: user.id, title: null, category: null, thumbnail: null, content: null, status: "TEMP" }])
+      .select();
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    if (data) {
+      toast.success("토픽을 생성하였습니다.");
+      navigate(`/topic/${data[0].id}/create`);
+    }
+  };
   return (
     <div className="w-full max-w-[1328px] h-full flex items-start py-6 gap-6">
       <aside className="sticky top-18 w-60 min-w-60 hidden sm:flex flex-col gap-4">

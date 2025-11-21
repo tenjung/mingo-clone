@@ -30,17 +30,15 @@ import { z } from "zod";
 const formSchema = z
   .object({
     email: z.email({
-      //이메일 형식 검사
       error: "올바른 형식의 이메일 주소를 입력해주세요.",
     }),
     password: z.string().min(8, {
       error: "비밀번호는 최소 8자 이상이어야 합니다.",
     }),
     confirmPassword: z.string().min(8, {
-      //비밀번호가 최소 8자이상
       error: "비밀번호 확인을 입력해주세요.",
     }),
-  }) //두 비밀번호가 맞는지 추가로 검사
+  })
   .superRefine(({ password, confirmPassword }, ctx) => {
     if (password !== confirmPassword) {
       ctx.addIssue({
@@ -52,8 +50,6 @@ const formSchema = z
   });
 
 function SignUp() {
-  //페이지 이동을 위해 useNavigate 훅 사용
-  const navigate = useNavigate();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -63,35 +59,38 @@ function SignUp() {
     },
   });
 
-  //필수동의
+  const navigate = useNavigate();
+  // 필수 동의항목 상태값
   const [serviceAgreed, setServiceAgreed] = useState<boolean>(true); // 서비스 이용약관 동의 여부
-  const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(true); // 개입정보 수집 및 이용동의 여부
+  const [privacyAgreed, setPrivacyAgreed] = useState<boolean>(true); // 개인정보 수집 및 이용동의 여부
+  const [marketingAgreed, setMarketingAgreed] = useState<boolean>(true); // 마케팅 및 광고 수신 동의 여부
 
+  // 일반 회원가입
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    console.log("values: ", values);
-
     if (!serviceAgreed || !privacyAgreed) {
       toast.warning("잠깐! 필수 동의가 아직 완료되지 않았어요!");
       return;
     }
-    // subaase로 회원가입 시도
+
     try {
       const {
         data: { user, session },
-        error: supabaseError,
+        error: signUpError,
       } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
       });
-      if (supabaseError) {
-        toast.error(supabaseError.message === "user aaa" ? "이미가입된" : "회원가입 중 오류");
+
+      if (signUpError) {
+        toast.error(signUpError.message === "User already registered" ? "이미 가입된 계정입니다." : "회원가입 중 오류가 발생했습니다.");
         return;
       }
-      //user와 session 두값 모두 null이 아닐 경우에만 회원가입 처리
+
+      // user와 session 두 값 모두 null이 아닐 경우에만 회원가입이 완료되었음을 의미
       if (user && session) {
-        //회원가입 성공시,
+        // 회원가입 성공 시,
         toast.success("회원가입을 완료하였습니다.");
-        navigate("/sign-in"); // 로그인 페이지로 리디렉션
+        navigate("/sign-in"); // => 로그인 페이지로 리디렉션
       }
     } catch (error) {
       console.log(error);
