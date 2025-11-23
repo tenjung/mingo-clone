@@ -3,20 +3,23 @@ import { useRef, useState } from "react";
 import { AppTextEditor } from "@/components/common";
 import { Button, Card, Input, Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue, Separator } from "@/components/ui";
 import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
-import { nanoid } from "zod";
+import { nanoid } from "nanoid";
 import { toast } from "sonner";
 import { useParams } from "react-router";
 
 function CreateTopic() {
+  //라우트에서 topic_id 받기
   const { topic_id } = useParams();
 
   const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState(null);
+  const [content, setContent] = useState("");
   const [category, setCategory] = useState<string>("");
   const [thumbnail, setThumbnail] = useState<File | string | null>(null);
+
   // 저장버튼 누르면 실행됨
+  // 저장
   const handleSave = async () => {
-    if (!title && !category && !thumbnail && !content) {
+    if (!title || !category || !thumbnail || !content) {
       toast.warning("입력되지 않은 항목이 있습니다. 필수값을 입력해주세요.");
       return;
     }
@@ -48,10 +51,11 @@ function CreateTopic() {
     } else if (typeof thumbnail === "string") {
       thumbnailUrl = thumbnail; // 기존 이미지를 유지
     }
+    const now = new Date().toISOString();
 
     const { data, error } = await supabase
       .from("topics")
-      .update([{ title, category, thumbnail: thumbnailUrl, content, status: "TEMP" }])
+      .update([{ title, category, thumbnail: thumbnailUrl, content, status: "TEMP", updated_at: now }])
       .eq("id", topic_id)
       .select();
 
@@ -96,7 +100,7 @@ function CreateTopic() {
     // 썸네일이 설정되지 않은 경우에는 기본 이미지 아이콘을 보여줍니다.
     return (
       <div className="w-full aspect-video flex items-center justify-center rounded-md bg-card">
-        <Button variant={"ghost"} size={"icon"} onClick={() => fileInputRef.current?.click()}>
+        <Button className="px-40 py-20" variant={"ghost"} size={"icon"} onClick={() => fileInputRef.current?.click()}>
           <Image />
         </Button>
       </div>
@@ -133,7 +137,7 @@ function CreateTopic() {
               </div>
               {/* Blocknote 텍스트 에디터 UI */}
               <div className="w-full h-60%">
-                <AppTextEditor />
+                <AppTextEditor value={content} onChange={setContent} />
               </div>
             </div>
           </div>
@@ -182,7 +186,7 @@ function CreateTopic() {
                 <Input type="file" accept="image/*" ref={fileInputRef} onChange={handleChangeFile} className="hidden" />
                 {/* 썸네일 제거 버튼 */}
                 <Button variant={"secondary"} className="bg-card border-1" onClick={() => setThumbnail(null)}>
-                  <ImageOff />
+                  <ImageOff className="" />
                   썸네일 제거
                 </Button>
               </div>

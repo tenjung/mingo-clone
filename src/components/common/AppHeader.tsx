@@ -13,13 +13,11 @@ function AppHeader() {
     setTheme(theme === "dark" ? "light" : "dark");
   };
 
-  // zustand 스토어 useAuthStore에서 세션 로그아웃 가져옴
-
   return (
     <header className="fixed z-20 w-full h-12 min-h-12 flex items-center justify-center  px-6">
       <div className="w-full max-w-[1328px] h-full flex items-center justify-between">
         <div className="flex items-center gap-4">
-          {/* <img src="" alt="@LOGO" /> */}
+          <img src="/public/logo-sm.svg" alt="@LOGO" className="w-6" />
           <NavLink to={"/"}>토픽 인사이트</NavLink>
           <Separator orientation="vertical" className="h-3!" />
           <NavLink to={"/user/:id/profile"}>프로필</NavLink>

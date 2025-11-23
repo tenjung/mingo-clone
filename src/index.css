@@ -125,7 +125,7 @@
   --bn-menu-text-color: var(--card-foreground) !important;
 
   /* 기타 UI 요소  */
-  --bn-colors-editor-background: #212121 !important;
+  --bn-colors-editor-background: oklch(0.205 0 0) !important;
   --bn-colors-editor-text: var(--foreground) !important;
 }
 

@@ -4,14 +4,19 @@ import "@blocknote/mantine/style.css";
 import "@blocknote/core/fonts/inter.css";
 import { ko } from "@blocknote/core/locales";
 
-function AppTextEditor() {
-  // Creates a new editor instance.
+function AppTextEditor({ value, onChange }) {
   const editor = useCreateBlockNote({
     dictionary: ko,
+    initialContent: value ?? "",
   });
 
-  // Renders the editor instance using a React component.
-  return <BlockNoteView editor={editor} />;
+  return (
+    <BlockNoteView
+      editor={editor}
+      onChange={() => {
+        onChange(editor.document);
+      }}
+    />
+  );
 }
-
 export { AppTextEditor };
