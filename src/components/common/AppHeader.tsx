@@ -14,9 +14,9 @@ function AppHeader() {
   };
 
   return (
-    <header className="fixed z-20 w-full h-12 min-h-12 flex items-center justify-center  px-6">
+    <header className="fixed z-20 w-full h-12 min-h-12 flex items-center justify-center  px-6 bg-white dark:bg-gray-950">
       <div className="w-full max-w-[1328px] h-full flex items-center justify-between">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
           <img src="/public/logo-sm.svg" alt="@LOGO" className="w-6" />
           <NavLink to={"/"}>토픽 인사이트</NavLink>
           <Separator orientation="vertical" className="h-3!" />

@@ -7,10 +7,13 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { CATEGORIES } from "./constants";
 import supabase from "./utils/supabase";
+import { useEffect, useState } from "react";
 
 function App() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
+
+  const [topics, setTopics] = useState([]);
 
   const moveToPage = async () => {
     // 1. 로그인 여부 체크
@@ -35,6 +38,29 @@ function App() {
       navigate(`/topic/${data[0].id}/create`);
     }
   };
+
+  const fetchTopics = async () => {
+    try {
+      const { data, error } = await supabase.from("topics").select("*").eq("status", "PUBLISH");
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (data) {
+        setTopics(data);
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
+  };
+
+  useEffect(() => {
+    fetchTopics();
+  }, []);
+
   return (
     <div className="w-full max-w-[1328px] h-full flex items-start py-6 gap-6">
       <aside className="sticky top-18 w-60 min-w-60 hidden sm:flex flex-col gap-4">
@@ -71,7 +97,7 @@ function App() {
           {/* 검색창 */}
           <div className="w-full max-w-lg flex items-center gap-2 border py-2 pl-4 pr-3 rounded-full">
             <Search size={24} className="text-neutral-500 -mr-2" />
-            <Input placeholder="관심 있는 클래스, 토픽 주제를 검색하세요." className="border-none bg-transparent! focus-visible:ring-0 placeholder:text-base" />
+            <Input placeholder="관심 있는 클래스, 토픽 주제를 검색하세요." className="border-none bg-transparent! shadow-none focus-visible:ring-0 placeholder:text-base" />
             <Button variant={"secondary"} className="rounded-full">
               검색
             </Button>
@@ -105,10 +131,9 @@ function App() {
             <p className="text-neutral-500 text-base">새로운 시선으로, 새로운 이야기를 시작하세요. 지금 바로 당신만의 토픽을 작성해보세요.</p>
           </div>
           <div className="grid grid-cols-2 gap-6">
-            <NewTopic />
-            <NewTopic />
-            <NewTopic />
-            <NewTopic />
+            {topics.map((topic) => (
+              <NewTopic props={topic} />
+            ))}
           </div>
         </section>
       </div>

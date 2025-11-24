@@ -5,22 +5,27 @@ import { Button, Card, Input, Select, SelectContent, SelectGroup, SelectItem, Se
 import { ArrowLeft, Asterisk, BookOpenCheck, Image, ImageOff, Save, Trash2 } from "lucide-react";
 import { nanoid } from "nanoid";
 import { toast } from "sonner";
-import { useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
+import type { Block } from "@blocknote/core";
 
 function CreateTopic() {
   //라우트에서 topic_id 받기
   const { topic_id } = useParams();
+  const navigate = useNavigate();
 
   const [title, setTitle] = useState<string>("");
-  const [content, setContent] = useState("");
+  const [content, setContent] = useState<Block[]>([]);
   const [category, setCategory] = useState<string>("");
   const [thumbnail, setThumbnail] = useState<File | string | null>(null);
+  // => File 타입의 원본 데이터를 받음
+  // => Supabase의 이미지만 관리하는 Storage에 전달받은 File을 저장 => URL 형식으로
+  // => Supabase 데이터베이스에 저장 (in topics 테이블의 thumbnail 컬럼)
 
   // 저장버튼 누르면 실행됨
   // 저장
   const handleSave = async () => {
-    if (!title || !category || !thumbnail || !content) {
-      toast.warning("입력되지 않은 항목이 있습니다. 필수값을 입력해주세요.");
+    if (!title && !category && !thumbnail && !content) {
+      toast.warning("작성 중인 토픽을 저장하였습니다.");
       return;
     }
 
@@ -51,17 +56,73 @@ function CreateTopic() {
     } else if (typeof thumbnail === "string") {
       thumbnailUrl = thumbnail; // 기존 이미지를 유지
     }
-    const now = new Date().toISOString();
 
     const { data, error } = await supabase
       .from("topics")
-      .update([{ title, category, thumbnail: thumbnailUrl, content, status: "TEMP", updated_at: now }])
+      .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "TEMP" }])
       .eq("id", topic_id)
       .select();
 
-    if (error) throw error;
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     if (data) {
       toast.success("작성 중인 토픽을 저장하였습니다.");
+      return;
+    }
+  };
+
+  // 발행
+  const handlePublish = async () => {
+    // console.log("content라는 값이 어떻게 출력이 될까?", content);
+
+    if (!title || !category || !thumbnail || !content) {
+      toast.warning("입력되지 않은 항목이 있습니다. 필수값을 입력해주세요.");
+      return;
+    }
+
+    // 1. 파일 업로드 시, Supabase의 Storage 즉, bucket 폴더에 이미지를 먼저 업로드 한 후
+    // 이미지가 저장된 bucket 폴더의 경로 URL 주소를 우리가 관리하고 있는 Topics 테이블 thumbnail 컬럼에 문자열 형태
+    // 즉, string 타입(DB에서는 text 타입)으로 저장한다.
+    let thumbnailUrl: string | null = null;
+
+    // 최초로 썸네일을 DB에 저장할 경우 or 새로운 썸네일을 업로드할 경우
+    if (thumbnail && thumbnail instanceof File) {
+      // 썸네일 이미지를 storage에 업로드
+      const fileExt = thumbnail.name.split(".").pop(); // png
+      const fileName = `${nanoid()}.${fileExt}`;
+      const filePath = `topics/${fileName}`;
+
+      const { error: fileUploadError } = await supabase.storage.from("files").upload(filePath, thumbnail);
+
+      if (fileUploadError) throw fileUploadError;
+
+      const { data } = supabase.storage.from("files").getPublicUrl(filePath);
+
+      if (!data) {
+        toast.error("해당 파일의 Public URL 조회를 실패하였습니다.");
+        throw new Error("해당 파일의 Public URL 조회를 실패하였습니다.");
+      }
+      thumbnailUrl = data.publicUrl;
+    } else if (typeof thumbnail === "string") {
+      thumbnailUrl = thumbnail; // 기존 이미지를 유지
+    }
+
+    const { data, error } = await supabase
+      .from("topics")
+      .update([{ title, category, thumbnail: thumbnailUrl, content: JSON.stringify(content), status: "PUBLISH" }])
+      .eq("id", topic_id)
+      .select();
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    if (data) {
+      toast.success("토픽을 발행하였습니다.");
+      navigate("/");
+
       return;
     }
   };
@@ -137,7 +198,7 @@ function CreateTopic() {
               </div>
               {/* Blocknote 텍스트 에디터 UI */}
               <div className="w-full h-60%">
-                <AppTextEditor value={content} onChange={setContent} />
+                <AppTextEditor props={content} onSetContent={setContent} />
               </div>
             </div>
           </div>
@@ -202,7 +263,7 @@ function CreateTopic() {
           <Save />
           저장
         </Button>
-        <Button variant={"outline"} className="px-5! bg-emerald-900/80!">
+        <Button variant={"outline"} className="px-5! bg-emerald-900/80! " onClick={handlePublish}>
           <BookOpenCheck />
           발행
         </Button>
