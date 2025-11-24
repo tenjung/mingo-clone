@@ -1,6 +1,7 @@
 import { BadgeCheck, CaseSensitive, ChartNoAxesColumnIncreasing, Heart, MessageCircleMore } from "lucide-react";
 import { Card, Separator } from "../ui";
 import { UserInfo } from "./user-info";
+import { AppTextEditor } from "@/components/common";
 
 interface Props {
   props: Topic;
@@ -10,15 +11,15 @@ interface Props {
 // 유저가 볼 수 있게 하기 위해 Blocknote가 가진 Block[] 타입에서
 // text 요소만 추출하여 UI 구조에 맞게 설정
 // 과제//////////////////////////////////////////////////////////////////
-// AI쓰지말고 직접 코드의 내용은 스파베이스
-function extractTextfromContent(content: string, maxChars = 200) {
-  const parsed = typeof content === "string" ? JSON.parse(content) : content;
+// AI쓰지말고 직접 작성
+// string으로 저장되어있는 content 데이터를 가져오면서 배열형식으로 바꿔줘야함 JSON을 사용
+function extractTextfromContent(content, maxChars = 200) {
+  //extractTextfromContent 본문 content 호출하는 함수 지정
+  // 매개변수 content , maxChars 최대길이 설정하는 매개변수인데 200까지로 설정
+  const parsed = JSON.parse(content);
+  // 변수선언함 parsed로  = JSON.prase를 쓰면 supabase에 string타입인 content항목을 배열로 변환함
 
-  if (!Array.isArray(parsed)) {
-    console.warn("전달받은 Blocknote의 content 데이터 타입이 배열이 아닙니다.");
-    return "";
-  }
-
+  console.log(parsed);
   //////////////////////////////////////////////////////////////////
   let result = "";
 
