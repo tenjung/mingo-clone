@@ -1,5 +1,5 @@
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Form, FormControl, FormField, FormItem, FormLabel, FormMessage, Input } from "@/components/ui";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth";
 import supabase from "@/utils/supabase"; // Supabase 불러오기
 
 import { zodResolver } from "@hookform/resolvers/zod";

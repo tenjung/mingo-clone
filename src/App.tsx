@@ -1,19 +1,30 @@
-import { useAuthStore } from "@/store/authStore";
-import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
+import { useAuthStore } from "@/store/auth";
+import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search, SearchX } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
 import { useNavigate } from "react-router";
 
 import { toast } from "sonner";
-import { CATEGORIES } from "./constants";
 import supabase from "./utils/supabase";
 import { useEffect, useState } from "react";
+import type { Topic } from "./types";
+
+export const CATEGORIES = [
+  // { icon: List, label: "전체" },
+  { icon: Lightbulb, label: "인문학", value: "humidity" },
+  { icon: Rocket, label: "스타트업", value: "start-up" },
+  { icon: CodeXml, label: "IT·프로그래밍", value: "programming" },
+  { icon: Goal, label: "서비스·전략 기획", value: "planning" },
+  { icon: ChartNoAxesCombined, label: "마케팅", value: "marketing" },
+  { icon: DraftingCompass, label: "디자인·일러스트", value: "design" },
+  { icon: Footprints, label: "자기계발", value: "self-development" },
+];
 
 function App() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
-  const [topics, setTopics] = useState([]);
+  const [topics, setTopics] = useState<Topic[]>([]);
 
   const moveToPage = async () => {
     // 1. 로그인 여부 체크
@@ -39,27 +50,31 @@ function App() {
     }
   };
 
-  const fetchTopics = async () => {
-    try {
-      const { data, error } = await supabase.from("topics").select("*").eq("status", "PUBLISH");
+  // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
+  // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
+  // 3. 도메인 즉, URL에 카테고리 value 값을 보여줄 것인지 아닌지?
+  // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
+  // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
 
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
+  const [selectedCategory, setSelectedCategory] = useState("");
 
-      if (data) {
-        setTopics(data);
-      }
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
+  const handleCategoryChange = (value) => {
+    setSelectedCategory(value);
+    fetchTopics(value); // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
+  };
+  const fetchTopics = async (categoryParam) => {
+    // categoryParam가 있으면 그 값, 아니면 현재 상태값 selectedCategory 사용
+    const category = categoryParam !== undefined ? categoryParam : selectedCategory;
+
+    let query = supabase.from("topics").select("*").eq("status", "PUBLISH");
+    if (category) query = query.eq("category", category);
+    const { data, error } = await query;
+    if (!error && data) setTopics(data);
   };
 
   useEffect(() => {
     fetchTopics();
-  }, []);
+  }, [selectedCategory]);
 
   return (
     <div className="w-full max-w-[1328px] h-full flex items-start py-6 gap-6">
@@ -69,19 +84,27 @@ function App() {
           <ChevronDown />
         </div>
         <div className="flex flex-col gap-2">
-          <Button className="flex justify-start text-white bg-card hover:bg-card hover:text-white hover:pl-6 duration-500">
+          {/* 전체버튼 */}
+          <Button
+            onClick={() => handleCategoryChange("")}
+            className={`flex justify-start text-neutral-500 bg-card hover:bg-card hover:text-white hover:pl-6 duration-500  ${
+              selectedCategory === "" ? "font-bold text-white bg-gray-500" : "font-normal bg-transparent"
+            }`}
+          >
             <List />
             전체
           </Button>
-          {CATEGORIES.map((category) => {
-            const IconComponent = category.icon;
-            return (
-              <Button key={category.label} className="flex justify-start text-neutral-500 bg-transparent hover:bg-card hover:text-white hover:pl-6 duration-500">
-                <IconComponent />
-                {category.label}
-              </Button>
-            );
-          })}
+          {/* 카테고리버튼  */}
+          {CATEGORIES.map((category) => (
+            <Button
+              key={category.value}
+              onClick={() => handleCategoryChange(category.value)}
+              className={`flex justify-start ${selectedCategory === category.value ? "bg-card text-white font-bold bg-gray-500" : "bg-transparent text-neutral-500 font-normal"}`}
+            >
+              <category.icon />
+              {category.label}
+            </Button>
+          ))}
         </div>
       </aside>
       <div className="min-h-screen flex-1 flex flex-col gap-12">
@@ -122,7 +145,7 @@ function App() {
           </div>
         </section>
         {/* NEW 토픽 */}
-        <section className="flex flex-col gap-6">
+        <section className="flex-1 flex flex-col gap-6">
           <div className="flex flex-col">
             <div className="flex items-center gap-2">
               <img src="/gifs/writing-hand.gif" alt="@WRITING-HAND" className="w-7 mb-2" />
@@ -130,11 +153,18 @@ function App() {
             </div>
             <p className="text-neutral-500 text-base">새로운 시선으로, 새로운 이야기를 시작하세요. 지금 바로 당신만의 토픽을 작성해보세요.</p>
           </div>
-          <div className="grid grid-cols-2 gap-6">
-            {topics.map((topic) => (
-              <NewTopic props={topic} />
-            ))}
-          </div>
+          {topics.length === 0 ? (
+            <div className="w-full flex-1 flex flex-col items-center justify-center gap-2">
+              <SearchX size={40} className="text-gray-700" />
+              <p className="text-neutral-500/50">조회 가능한 데이터가 없습니다.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 gap-6">
+              {topics.map((topic) => (
+                <NewTopic props={topic} />
+              ))}
+            </div>
+          )}
         </section>
       </div>
       <Button className="fixed bottom-6 left-1/2 transform -translate-x-1/2 py-5! px-5! rounded-full" onClick={moveToPage}>

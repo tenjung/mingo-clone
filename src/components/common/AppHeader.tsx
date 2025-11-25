@@ -2,7 +2,7 @@ import { NavLink } from "react-router";
 import { Button, Separator } from "../ui";
 
 import { useTheme } from "../theme-provider";
-import { useAuthStore } from "@/store/authStore";
+import { useAuthStore } from "@/store/auth";
 
 function AppHeader() {
   const { theme, setTheme } = useTheme();
@@ -14,7 +14,7 @@ function AppHeader() {
   };
 
   return (
-    <header className="fixed z-20 w-full h-12 min-h-12 flex items-center justify-center  px-6 bg-white dark:bg-gray-950">
+    <header className="fixed z-30 w-full h-12 min-h-12 flex items-center justify-center  px-6 bg-white dark:bg-gray-950">
       <div className="w-full max-w-[1328px] h-full flex items-center justify-between">
         <div className="flex items-center gap-4 ">
           <img src="/public/logo-sm.svg" alt="@LOGO" className="w-6" />

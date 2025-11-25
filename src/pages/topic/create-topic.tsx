@@ -246,7 +246,7 @@ function CreateTopic() {
                 {handleRenderPreview()}
                 <Input type="file" accept="image/*" ref={fileInputRef} onChange={handleChangeFile} className="hidden" />
                 {/* 썸네일 제거 버튼 */}
-                <Button variant={"secondary"} className="bg-card border-1" onClick={() => setThumbnail(null)}>
+                <Button variant={"secondary"} className="bg-card " onClick={() => setThumbnail(null)}>
                   <ImageOff className="" />
                   썸네일 제거
                 </Button>

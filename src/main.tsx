@@ -23,11 +23,11 @@ createRoot(document.getElementById("root")!).render(
           <Route path="/sign-up" element={<SignUp />} />
           <Route path="/sign-in" element={<SignIn />} />
           {/* USER */}
-          <Route path="/user/:id/profile" element={<UserProfile />} />
+          <Route path="/user/:user_id/profile" element={<UserProfile />} />
           {/* TOPIC */}
           <Route path="/topic/:topic_id/create" element={<CreateTopic />} />
-          <Route path="/topic/:id" element={<DetailTopic />} />
-          <Route path="/topic/:id/edit" element={<UpdateTopic />} />
+          <Route path="/topic/:topic_id" element={<DetailTopic />} />
+          <Route path="/topic/:topic_id/edit" element={<UpdateTopic />} />
         </Route>
       </Routes>
     </BrowserRouter>

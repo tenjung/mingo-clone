@@ -12,7 +12,7 @@ function HotTopic() {
         </p>
         <div
           className=" absolute inset-0
-    bg-gradient-to-t
+    bg-linear-to-t
     from-white/50 via-white/50 to-transparent
     dark:from-black/50 dark:via-black/50 dark:to-transparent
     rounded-b-lg"

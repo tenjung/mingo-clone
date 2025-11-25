@@ -1,18 +1,7 @@
 import supabase from "@/utils/supabase";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-
-interface User {
-  id: string;
-  email: string | undefined;
-  role: string | undefined;
-}
-
-interface AuthStore {
-  user: User | null;
-  setUser: (paramter: User | null) => void;
-  reset: () => Promise<void>;
-}
+import type { AuthStore, User } from "@/types";
 
 export const useAuthStore = create<AuthStore>()(
   persist(
