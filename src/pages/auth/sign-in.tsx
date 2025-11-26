@@ -3,6 +3,7 @@ import { useAuthStore } from "@/store/auth";
 import supabase from "@/utils/supabase"; // Supabase 불러오기
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 //유효성 검사를 쉽게 하기위해 zod를 사용하여 불러옴
 import { NavLink, useNavigate } from "react-router";
@@ -56,12 +57,57 @@ function SignIn() {
           email: user.email,
           role: user.role,
         });
-        toast.success("로그인을 완료하였습니다.");
+
         navigate("/"); // => 메인 페이지로 리디렉션
       }
     } catch (error) {
       console.log(error);
       throw error;
+    }
+  };
+
+  // 소셜 로그인 (구글)
+  const handleGoogleSignIn = async () => {
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${import.meta.env.VITE_SUPABASE_URL}/auth/callback`,
+          // 구글 OAuth 로그인 시 추가로 전달되는 파라미터, 토큰 발급 방식과 사용자 동의 화면에 영향을 줍니다.
+          // access_type: 리프레시 토큰(refresh token)을 발급받기 위한 설정입니다.
+          // 일반적으로 OAuth 로그인에서는 access token만 발급되는데, 이 토큰은 시간이 지나면 만료됩니다.
+          // access_type: "offline"을 사용하면 => 사용자가 애플리케이션을 사용하지 않을 때도(refresh)
+          // 새 access token을 발급할 수 있게 해주는 리프레시 토큰을 받을 수 있습니다.
+
+          // prompt: "consent"
+          // 구글이 항상 동의 화면을 다시 보여주도록 강제하는 설정입니다.
+          // 일반적으로 사용자가 한 번 동의하면 구글은 다음에 자동으로 스킵하는데,
+          // 이 옵션을 쓰면 매번 동의 화면이 다시 뜹니다.
+          // 이것을 넣는 이유는 보통 리프레시 토큰을 항상 확실하게 받기 위해서입니다.
+          // => "사용자에게 다시 동의를 요청해라"라는 의미
+
+          // access_type: "offline" => 리프레시 토큰 요청 => 장기 로그인 유지, 백엔드에서 재인증 없이 접근하고자 함
+          // prompt: "consent" => 동의 화면을 강제로 다시 표시 => 리프레시 토큰을 안정적으로 받기 위함
+          queryParams: { access_type: "offline", prompt: "consent" },
+        },
+      });
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      // 구글로그인 정보가져오기
+      const { data } = await supabase.auth.getUser();
+      if (data.user) {
+        useAuthStore.getState().setUser({
+          id: data.user.id,
+          email: data.user.email,
+          role: data.user.role,
+        });
+      }
+    } catch (error) {
+      console.log(error);
+      console.log("구글 로그인 중 오류 발생:", error);
     }
   };
 
@@ -110,7 +156,7 @@ function SignIn() {
                 <Button type="submit" className="w-full">
                   로그인
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button type="button" variant="outline" className="w-full" onClick={handleGoogleSignIn}>
                   <img src="/icons/google.svg" alt="@GOOGLE" className="w-4" />
                   구글 로그인
                 </Button>

@@ -2,7 +2,7 @@ import { useAuthStore } from "@/store/auth";
 import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search, SearchX } from "lucide-react";
 import { Button, Input } from "./components/ui";
 import { HotTopic, NewTopic } from "./components/topic";
-import { useNavigate } from "react-router";
+import { useNavigate, useSearchParams } from "react-router";
 
 import { toast } from "sonner";
 import supabase from "./utils/supabase";
@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import type { Topic } from "./types";
 
 export const CATEGORIES = [
-  // { icon: List, label: "전체" },
+  { icon: List, label: "전체", value: "" },
   { icon: Lightbulb, label: "인문학", value: "humidity" },
   { icon: Rocket, label: "스타트업", value: "start-up" },
   { icon: CodeXml, label: "IT·프로그래밍", value: "programming" },
@@ -23,8 +23,30 @@ export const CATEGORIES = [
 function App() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser); // setUser 추가
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  // http://localhost:5173?category=humidity
+  const category = searchParams.get("category") || "";
 
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [searchValue, setSearchValue] = useState<string>("");
+
+  // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
+  // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
+  // 3. 도메인 즉, URL에 카테고리 value 값을 보여줄 것인지 아닌지?
+  // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
+  // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
+  const handleCategoryChange = (value: string) => {
+    // http://localhost:5173/?category=start-up
+    if (value === category) return; // => 선택한 항목 재선택한 것이므로 무시
+    else if (value === "") setSearchParams({});
+    else setSearchParams({ category: value });
+  };
+
+  const handleSearch = () => {
+    fetchTopics(searchValue);
+  };
 
   const moveToPage = async () => {
     // 1. 로그인 여부 체크
@@ -50,32 +72,37 @@ function App() {
     }
   };
 
-  // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
-  // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
-  // 3. 도메인 즉, URL에 카테고리 value 값을 보여줄 것인지 아닌지?
-  // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
-  // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
+  const fetchTopics = async (searchValue?: string) => {
+    try {
+      const query = supabase.from("topics").select("*").eq("status", "PUBLISH");
 
-  const [selectedCategory, setSelectedCategory] = useState("");
+      if (searchValue && searchValue.trim() !== "") {
+        query.like("title", `%${searchValue}%`);
+      }
 
-  const handleCategoryChange = (value) => {
-    setSelectedCategory(value);
-    fetchTopics(value); // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
-  };
-  const fetchTopics = async (categoryParam) => {
-    // categoryParam가 있으면 그 값, 아니면 현재 상태값 selectedCategory 사용
-    const category = categoryParam !== undefined ? categoryParam : selectedCategory;
+      if (category && category.trim() !== "") {
+        query.eq("category", category);
+      }
 
-    let query = supabase.from("topics").select("*").eq("status", "PUBLISH");
-    if (category) query = query.eq("category", category);
-    const { data, error } = await query;
-    if (!error && data) setTopics(data);
+      const { data, error } = await query;
+
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+
+      if (data) {
+        setTopics(data);
+      }
+    } catch (error) {
+      console.log(error);
+      throw error;
+    }
   };
 
   useEffect(() => {
     fetchTopics();
-  }, [selectedCategory]);
-
+  }, [category]);
   return (
     <div className="w-full max-w-[1328px] h-full flex items-start py-6 gap-6">
       <aside className="sticky top-18 w-60 min-w-60 hidden sm:flex flex-col gap-4">
@@ -85,26 +112,21 @@ function App() {
         </div>
         <div className="flex flex-col gap-2">
           {/* 전체버튼 */}
-          <Button
-            onClick={() => handleCategoryChange("")}
-            className={`flex justify-start text-neutral-500 bg-card hover:bg-card hover:text-white hover:pl-6 duration-500  ${
-              selectedCategory === "" ? "font-bold text-white bg-gray-500" : "font-normal bg-transparent"
-            }`}
-          >
-            <List />
-            전체
-          </Button>
-          {/* 카테고리버튼  */}
-          {CATEGORIES.map((category) => (
-            <Button
-              key={category.value}
-              onClick={() => handleCategoryChange(category.value)}
-              className={`flex justify-start ${selectedCategory === category.value ? "bg-card text-white font-bold bg-gray-500" : "bg-transparent text-neutral-500 font-normal"}`}
-            >
-              <category.icon />
-              {category.label}
-            </Button>
-          ))}
+          {CATEGORIES.map((item, index) => {
+            const IconComponent = item.icon;
+            const isActive = item.value === category;
+
+            return (
+              <Button
+                key={index}
+                className={`${isActive && "pl-6! text-white! bg-card!"} flex justify-start text-neutral-500 bg-transparent hover:bg-card hover:text-white hover:pl-6 duration-500`}
+                onClick={() => handleCategoryChange(item.value)}
+              >
+                <IconComponent />
+                {item.label}
+              </Button>
+            );
+          })}
         </div>
       </aside>
       <div className="min-h-screen flex-1 flex flex-col gap-12">
@@ -120,8 +142,12 @@ function App() {
           {/* 검색창 */}
           <div className="w-full max-w-lg flex items-center gap-2 border py-2 pl-4 pr-3 rounded-full">
             <Search size={24} className="text-neutral-500 -mr-2" />
-            <Input placeholder="관심 있는 클래스, 토픽 주제를 검색하세요." className="border-none bg-transparent! shadow-none focus-visible:ring-0 placeholder:text-base" />
-            <Button variant={"secondary"} className="rounded-full">
+            <Input
+              placeholder="관심 있는 클래스, 토픽 주제를 검색하세요."
+              onChange={(event) => setSearchValue(event.target.value)}
+              className="border-none bg-transparent! focus-visible:ring-0 placeholder:text-base"
+            />
+            <Button variant={"secondary"} className="rounded-full" onClick={handleSearch}>
               검색
             </Button>
           </div>
@@ -155,12 +181,18 @@ function App() {
           </div>
           {topics.length === 0 ? (
             <div className="w-full flex-1 flex flex-col items-center justify-center gap-2">
-              <SearchX size={40} className="text-gray-700" />
+              <img src="/vite.svg" alt="" className="w-6 h-6 opacity-50" />
               <p className="text-neutral-500/50">조회 가능한 데이터가 없습니다.</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-6">
-              {topics.map((topic) => (
+              {/* 둘 중 하나의 방법으로 최신순으로 나열한다. */}
+              {topics
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+                .map((topic) => (
+                  <NewTopic props={topic} />
+                ))}
+              {[...topics].reverse().map((topic) => (
                 <NewTopic props={topic} />
               ))}
             </div>
