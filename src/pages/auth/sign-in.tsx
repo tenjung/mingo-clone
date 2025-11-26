@@ -3,7 +3,7 @@ import { useAuthStore } from "@/store/auth";
 import supabase from "@/utils/supabase"; // Supabase 불러오기
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect } from "react";
+
 import { useForm } from "react-hook-form";
 //유효성 검사를 쉽게 하기위해 zod를 사용하여 불러옴
 import { NavLink, useNavigate } from "react-router";
@@ -95,15 +95,6 @@ function SignIn() {
       if (error) {
         toast.error(error.message);
         return;
-      }
-      // 구글로그인 정보가져오기
-      const { data } = await supabase.auth.getUser();
-      if (data.user) {
-        useAuthStore.getState().setUser({
-          id: data.user.id,
-          email: data.user.email,
-          role: data.user.role,
-        });
       }
     } catch (error) {
       console.log(error);

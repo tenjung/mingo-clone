@@ -23,7 +23,53 @@ export const CATEGORIES = [
 function App() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const setUser = useAuthStore((state) => state.setUser); // setUser 추가
+  const setUser = useAuthStore((state) => state.setUser);
+
+  //!!함정 구글 OAuth 로그인은 리다이렉션을 통해 이루어지기 때문에 로그인 버튼을 누른 함수가 완료되기전에 페이지가 바뀌어서
+  // handleGoogleSignIn 함수내에서는 로그인결과 세션을 바로 알수 없다.
+  useEffect(() => {
+    // 로딩될때 마다 supabase - session 확인
+    const checkUserSession = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      //세션이 있으면 유져 정보를 불러온다
+      if (session) {
+        const user = session.user;
+        setUser({
+          // useAuthStore의 setUser 함수를 호출
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        });
+      } else {
+        // 세션이 없으면 초기화
+        setUser(null);
+      }
+    };
+
+    checkUserSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "SIGNED_IN" && session) {
+        const user = session.user;
+        setUser({
+          // useAuthStore의 setUser 함수를 호출
+          id: user.id,
+          email: user.email,
+          role: user.role,
+        });
+      } else if (event === "SIGNED_OUT") {
+        setUser(null);
+      }
+    });
+
+    // 이건 공식처럼 외워야함 컴포넌트가 사라지면 리스너를 작동 안하게 해지
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [setUser]); // setUser가 변경될 때만 다시 실행하도록 의존성 배열에 추가
 
   const [searchParams, setSearchParams] = useSearchParams();
   // http://localhost:5173?category=humidity
@@ -187,11 +233,11 @@ function App() {
           ) : (
             <div className="grid grid-cols-2 gap-6">
               {/* 둘 중 하나의 방법으로 최신순으로 나열한다. */}
-              {topics
+              {/* {topics
                 .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
                 .map((topic) => (
                   <NewTopic props={topic} />
-                ))}
+                ))} */}
               {[...topics].reverse().map((topic) => (
                 <NewTopic props={topic} />
               ))}
