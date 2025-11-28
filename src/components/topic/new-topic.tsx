@@ -57,7 +57,7 @@ function NewTopic({ props }: Props) {
         </div>
         <div className="w-35 min-w-35 bg-accent rounded-md">
           {/* <img src="/vite.svg" alt="@SAMPLE_IMAGE" className="w-35 min-w-35 bg-accent rounded-md" /> */}
-          <img src={props.thumbnail} alt="@SAMPLE_IMAGE" className="w-full min-h-35 bg-accent rounded-md object-cover" />
+          <img src={props.thumbnail} alt="@SAMPLE_IMAGE" className="w-full min-h-35 bg-accent rounded-md object-cover aspect-square" />
         </div>
       </div>
       <Separator />
