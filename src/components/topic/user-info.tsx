@@ -1,5 +1,3 @@
-import React from "react";
-import { Card } from "../ui";
 import { BadgeCheck } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
 
