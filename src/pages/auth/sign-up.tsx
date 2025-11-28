@@ -172,7 +172,7 @@ function SignUp() {
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <Checkbox className="mr-2" />
+                        <Checkbox className="mr-2" checked={serviceAgreed} onCheckedChange={(checked) => setServiceAgreed(checked as boolean)} />
                         <span>서비스 이용약관 동의</span>
                       </div>
                       <button className="text-sm text-gray-300 flex items-center hover:underline">
@@ -185,7 +185,7 @@ function SignUp() {
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center">
-                        <Checkbox className="mr-2" />
+                        <Checkbox className="mr-2" checked={privacyAgreed} onCheckedChange={(checked) => setPrivacyAgreed(checked as boolean)} />
                         <span>개인정보 수집 및 이용동의</span>
                       </div>
                       <button className="text-sm text-gray-300 flex items-center hover:underline">
@@ -203,7 +203,7 @@ function SignUp() {
                   <div className="font-bold mb-2">선택 동의항목</div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <Checkbox className="mr-2" />
+                      <Checkbox className="mr-2" checked={marketingAgreed} onCheckedChange={(checked) => setMarketingAgreed(checked as boolean)} />
                       <span>마케팅 및 광고 수신 동의</span>
                     </div>
                     <button className="text-sm text-gray-300 flex items-center hover:underline">
