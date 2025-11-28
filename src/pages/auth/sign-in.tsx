@@ -72,7 +72,7 @@ function SignIn() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: `${import.meta.env.VITE_SUPABASE_URL}/auth/callback`,
+          redirectTo: `${import.meta.env.VITE_BASE_URL}/auth/callback`,
           // 구글 OAuth 로그인 시 추가로 전달되는 파라미터, 토큰 발급 방식과 사용자 동의 화면에 영향을 줍니다.
           // access_type: 리프레시 토큰(refresh token)을 발급받기 위한 설정입니다.
           // 일반적으로 OAuth 로그인에서는 access token만 발급되는데, 이 토큰은 시간이 지나면 만료됩니다.
