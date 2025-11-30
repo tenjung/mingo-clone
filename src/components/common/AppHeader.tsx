@@ -1,4 +1,12 @@
 import { Button } from "../ui";
+import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
+
+const NAV_ITEMS = [
+  { label: "소개", path: "/about" },
+  { label: "갤러리", path: "/gallery" },
+  { label: "자유게시판", path: "/board" },
+  { label: "스케줄", path: "/schedule" },
+];
 
 function AppHeader() {
   return (
@@ -10,20 +18,24 @@ function AppHeader() {
         </h1>
 
         {/* 데스크톱 네비게이션 링크 */}
-        <nav className="hidden md:flex space-x-2 lg:space-x-4">
-          <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:bg-red-50 hover:text-red-600">
-            소개
-          </Button>
-          <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:bg-red-50 hover:text-red-600">
-            갤러리
-          </Button>
-          <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:bg-red-50 hover:text-red-600">
-            자유게시판
-          </Button>
-          <Button variant="ghost" className="text-gray-700 dark:text-gray-300 hover:bg-red-50 hover:text-red-600">
-            스케줄
-          </Button>
-        </nav>
+        <Menubar className="hidden md:flex border-none bg-transparent h-auto p-0 space-x-1">
+          {NAV_ITEMS.map((item) => (
+            <MenubarMenu key={item.path}>
+              <MenubarTrigger
+                // MenubarTrigger를 Button처럼 보이게 스타일링
+                className={`cursor-pointer text-base font-medium py-2 px-3 rounded-lg data-[state=open]:bg-red-50 dark:data-[state=open]:bg-gray-700
+                    text-gray-700 dark:text-gray-300 hover:bg-red-50 hover:text-red-600 dark:hover:bg-gray-700 dark:hover:text-red-400 transition-colors`}
+              >
+                {item.label}
+              </MenubarTrigger>
+              {/* MenubarContent는 필요에 따라 서브 메뉴를 넣을 수 있습니다.
+                // 현재는 단순 링크이므로 비워둡니다. */}
+              {/* <MenubarContent>
+                  <MenubarItem>서브 메뉴 예시</MenubarItem>
+                </MenubarContent> */}
+            </MenubarMenu>
+          ))}
+        </Menubar>
 
         {/* 로그인/가입 버튼 그룹 */}
         <div className="space-x-2">
