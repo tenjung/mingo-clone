@@ -5,7 +5,7 @@ function AppFooter() {
     <footer className="mt-16 border-t bg-gray-100 dark:bg-gray-800 p-8">
       <div className="mx-auto max-w-7xl text-center text-sm text-gray-600 dark:text-gray-400">
         <p className="font-semibold mb-2">얼씨구 다현 Official Fan Page</p>
-        <p>&copy; {new Date().getFullYear()} All Rights Reserved. For Fan Use Only.</p>
+        <p>&copy; {new Date().getFullYear()} All Rights Reserved. 찐팬천사.</p>
         <p className="mt-1 text-xs">개인정보처리방침 | 서비스 이용약관</p>
         <p className="mt-4 text-xs">Powered by React, TypeScript, shadcn/ui and Tailwind CSS.</p>
       </div>

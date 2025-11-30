@@ -19,7 +19,7 @@ function AppHeader() {
       <div className="mx-auto max-w-7xl p-4 flex justify-between items-center h-16">
         {/* 팬페이지 로고/타이틀 */}
         <h1 className={`text-3xl font-extrabold tracking-tight`}>
-          얼씨구 다현 <span className="text-xl text-yellow-500">✨</span>
+          찐팬천사🪽 얼씨구 다현 <span className="text-xl text-yellow-500">✨</span>
         </h1>
 
         {/* 데스크톱 네비게이션 링크 */}
