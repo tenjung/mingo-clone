@@ -39,7 +39,7 @@ function App() {
       <section className="mt-6">
         <Carousel className="w-full max-w-full">
           <CarouselContent className="rounded-xl overflow-hidden shadow-2xl">
-            {PROMO_SLIDES.map((item, index) => (
+            {PROMO_SLIDES.map((item) => (
               <CarouselItem key={item.id}>
                 {/* 캐러셀 슬라이드 내용 */}
                 <div className={`relative aspect-16/6 md:aspect-16/5 flex items-center justify-center rounded-xl transition-all duration-500 ${item.color}`}>
