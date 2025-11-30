@@ -32,6 +32,9 @@ const PROMO_SLIDES = [
   { id: 3, alt: "김다현 - 멜론 뮤직 어워드 대상 수상", caption: "MMA Daesang! Thank you Dahyun!", color: "bg-red-500" },
 ];
 
+///////1130 작업
+//
+
 function App() {
   return (
     <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-12">
