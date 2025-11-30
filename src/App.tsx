@@ -1,13 +1,6 @@
-import { useAuthStore } from "@/store/auth";
 import { ChartNoAxesCombined, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, Rocket } from "lucide-react";
 import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui";
 
-import { useNavigate, useSearchParams } from "react-router";
-
-import { toast } from "sonner";
-import supabase from "./utils/supabase";
-import { useEffect, useState } from "react";
-import type { Topic } from "./types";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "./components/ui/carousel";
 import { Separator } from "@radix-ui/react-separator";
 
@@ -40,134 +33,6 @@ const PROMO_SLIDES = [
 ];
 
 function App() {
-  const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
-  const setUser = useAuthStore((state) => state.setUser);
-
-  //!!함정 구글 OAuth 로그인은 리다이렉션을 통해 이루어지기 때문에 로그인 버튼을 누른 함수가 완료되기전에 페이지가 바뀌어서
-  // handleGoogleSignIn 함수내에서는 로그인결과 세션을 바로 알수 없다.
-  useEffect(() => {
-    // 로딩될때 마다 supabase - session 확인
-    const checkUserSession = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-
-      //세션이 있으면 유져 정보를 불러온다
-      if (session) {
-        const user = session.user;
-        setUser({
-          // useAuthStore의 setUser 함수를 호출
-          id: user.id,
-          email: user.email,
-          role: user.role,
-        });
-      } else {
-        // 세션이 없으면 초기화
-        setUser(null);
-      }
-    };
-
-    checkUserSession();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "SIGNED_IN" && session) {
-        const user = session.user;
-        setUser({
-          // useAuthStore의 setUser 함수를 호출
-          id: user.id,
-          email: user.email,
-          role: user.role,
-        });
-      } else if (event === "SIGNED_OUT") {
-        setUser(null);
-      }
-    });
-
-    // 이건 공식처럼 외워야함 컴포넌트가 사라지면 리스너를 작동 안하게 해지
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, [setUser]); // setUser가 변경될 때만 다시 실행하도록 의존성 배열에 추가
-
-  const [searchParams, setSearchParams] = useSearchParams();
-  // http://localhost:5173?category=humidity
-  const category = searchParams.get("category") || "";
-
-  const [topics, setTopics] = useState<Topic[]>([]);
-  const [searchValue, setSearchValue] = useState<string>("");
-
-  // 1. 전체 항목을 클릭했을 경우, "전체"라는 항목의 value 값을 어떻게 할 것인가?
-  // 2. 이미 선택된 항목에 대해 즉, 선택된 항목 재선택시 어떻게 할 것인가?
-  // 3. 도메인 즉, URL에 카테고리 value 값을 보여줄 것인지 아닌지?
-  // 4. 결국, Supabase Read의 Filtering 기능 사용할 때 어떻게 할 것인가?
-  // 5. 검색 기능과의 차별점을 둘 것인가? (선택 사항)
-  const handleCategoryChange = (value: string) => {
-    // http://localhost:5173/?category=start-up
-    if (value === category) return; // => 선택한 항목 재선택한 것이므로 무시
-    else if (value === "") setSearchParams({});
-    else setSearchParams({ category: value });
-  };
-
-  const handleSearch = () => {
-    fetchTopics(searchValue);
-  };
-
-  const moveToPage = async () => {
-    // 1. 로그인 여부 체크
-    if (!user) {
-      toast.warning("토픽 작성은 로그인 후 이용 가능합니다.");
-      return;
-    }
-
-    // 토픽 작성하기 버튼 클릭 시, (빈)토픽 생성
-    const { data, error } = await supabase
-      .from("topics")
-      .insert([{ author: user.id, title: null, category: null, thumbnail: null, content: null, status: "TEMP" }])
-      .select();
-
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
-
-    if (data) {
-      toast.success("토픽을 생성하였습니다.");
-      navigate(`/topic/${data[0].id}/create`);
-    }
-  };
-
-  const fetchTopics = async (searchValue?: string) => {
-    try {
-      const query = supabase.from("topics").select("*").eq("status", "PUBLISH");
-
-      if (searchValue && searchValue.trim() !== "") {
-        query.like("title", `%${searchValue}%`);
-      }
-
-      if (category && category.trim() !== "") {
-        query.eq("category", category);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
-
-      if (data) {
-        setTopics(data);
-      }
-    } catch (error) {
-      console.log(error);
-      throw error;
-    }
-  };
-
-  useEffect(() => {
-    fetchTopics();
-  }, [category]);
   return (
     <main className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-12">
       {/* 1. 메인 프로모션 캐러셀 */}
@@ -177,7 +42,7 @@ function App() {
             {PROMO_SLIDES.map((item, index) => (
               <CarouselItem key={item.id}>
                 {/* 캐러셀 슬라이드 내용 */}
-                <div className={`relative aspect-[16/6] md:aspect-[16/5] flex items-center justify-center rounded-xl transition-all duration-500 ${item.color}`}>
+                <div className={`relative aspect-16/6 md:aspect-16/5 flex items-center justify-center rounded-xl transition-all duration-500 ${item.color}`}>
                   {/* 임시 이미지/배너 영역 - 실제 이미지로 대체 */}
                   <div
                     className="absolute inset-0 bg-cover bg-center opacity-30"
@@ -222,7 +87,7 @@ function App() {
                   className="flex justify-between items-center p-3 rounded-lg hover:bg-red-50 dark:hover:bg-gray-700 cursor-pointer transition-colors duration-200 border-b border-gray-100 dark:border-gray-700 last:border-b-0"
                 >
                   <span className="font-medium truncate text-gray-800 dark:text-gray-200">{news.title}</span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 flex-shrink-0 ml-4">{news.date}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400 shrink-0 ml-4">{news.date}</span>
                 </div>
               ))}
             </CardContent>
@@ -236,7 +101,7 @@ function App() {
               <CardTitle className="text-2xl font-bold text-gray-700 dark:text-gray-300">🌟 팬 커뮤니티</CardTitle>
               <CardDescription>함께 응원하고 소통하며 추억을 공유해요.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3 flex-grow">
+            <CardContent className="space-y-3 grow">
               {/* 버튼에 강조 색상 적용 */}
               <Button className="w-full bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-700 transition-colors">자유게시판 (Talk)</Button>
               <Button className="w-full" variant="outline">

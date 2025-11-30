@@ -1,8 +1,4 @@
-import { NavLink } from "react-router";
 import { Button } from "../ui";
-
-import { useTheme } from "../theme-provider";
-import { useAuthStore } from "@/store/auth";
 
 function AppHeader() {
   return (
