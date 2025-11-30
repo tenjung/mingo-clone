@@ -1,7 +1,7 @@
 import { useAuthStore } from "@/store/auth";
-import { ChartNoAxesCombined, ChevronDown, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, PencilLine, Rocket, Search } from "lucide-react";
-import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle, Input } from "./components/ui";
-import { HotTopic, NewTopic } from "./components/topic";
+import { ChartNoAxesCombined, CodeXml, DraftingCompass, Footprints, Goal, Lightbulb, List, Rocket } from "lucide-react";
+import { Button, Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "./components/ui";
+
 import { useNavigate, useSearchParams } from "react-router";
 
 import { toast } from "sonner";

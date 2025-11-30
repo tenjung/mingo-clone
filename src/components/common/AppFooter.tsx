@@ -1,5 +1,3 @@
-import { Button, Separator } from "../ui";
-
 function AppFooter() {
   return (
     <footer className="mt-16 border-t bg-gray-100 dark:bg-gray-800 p-8">

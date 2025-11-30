@@ -1,19 +1,10 @@
 import { NavLink } from "react-router";
-import { Button, Separator } from "../ui";
+import { Button } from "../ui";
 
 import { useTheme } from "../theme-provider";
 import { useAuthStore } from "@/store/auth";
-import { Heart } from "lucide-react";
 
 function AppHeader() {
-  const { theme, setTheme } = useTheme();
-  const { user, reset } = useAuthStore();
-
-  // 버튼 클릭 시 다크/라이트 모드 토글
-  const toggleTheme = () => {
-    setTheme(theme === "dark" ? "light" : "dark");
-  };
-
   return (
     <header className="sticky top-0 z-50 border-b shadow-sm bg-white/95 backdrop-blur-sm dark:bg-gray-800/95 transition-colors duration-300">
       <div className="mx-auto max-w-7xl p-4 flex justify-between items-center h-16">
