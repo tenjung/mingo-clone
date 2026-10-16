@@ -102,7 +102,10 @@ test("Seoul date and malformed or repeated URL filters are handled consistently"
 test("all board menu destinations match public routes and the member write contract", () => {
   for (const item of navigationGroups.flatMap((group) => group.items)) {
     if (!item.href.startsWith("/board/")) {
-      assert.equal(item.href.split("?")[0], "/schedule");
+      assert.ok(
+        ["/schedule", "/rules"].includes(item.href.split("?")[0]),
+        item.href,
+      );
       continue;
     }
     const id = item.href.split("/").at(-1)!;

@@ -17,6 +17,7 @@ import {
   Music2,
   Newspaper,
   Radio,
+  ScrollText,
   Send,
   Tv,
   UserRoundPlus,
@@ -33,6 +34,7 @@ import { scheduleType } from "@/domain/schedule";
 const icons: Record<NavigationId, LucideIcon> = {
   all: LayoutList,
   notice: Megaphone,
+  rules: ScrollText,
   welcome: UserRoundPlus,
   question: HelpCircle,
   news: Newspaper,

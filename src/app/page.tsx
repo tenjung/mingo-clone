@@ -93,11 +93,8 @@ export default async function Home() {
       <div className="home-board-grid">
         <section>
           <SectionHeading title="카페 공지" href="/board/notice" />
-          {notices.topics.length ? (
-            <PostRows result={notices} compact />
-          ) : (
-            <CafeGuides />
-          )}
+          <CafeGuides />
+          {notices.topics.length > 0 && <PostRows result={notices} compact />}
         </section>
         <ScheduleSummary />
       </div>

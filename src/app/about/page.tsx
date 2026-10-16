@@ -37,6 +37,9 @@ export default function About() {
             다른 의견도 존중해 주세요. 비방, 사생활 침해, 개인정보 공유, 상업
             광고는 삼가 주세요.
           </p>
+          <Link href="/rules" className="text-link">
+            운영 규정(안) 전체 읽기 →
+          </Link>
         </div>
       </section>
       <section id="photo-sharing">

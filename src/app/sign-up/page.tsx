@@ -58,7 +58,15 @@ export default function SignUp() {
         </label>
         <p className="form-help">
           가입 후 이메일 인증이 필요할 수 있습니다.{" "}
-          <Link href="/about">카페 이용 안내</Link>도 확인해 주세요.
+          가입 전{" "}
+          <Link href="/rules" target="_blank" rel="noreferrer">
+            운영 규정(안) (새 창)
+          </Link>
+          과{" "}
+          <Link href="/about" target="_blank" rel="noreferrer">
+            카페 이용 안내 (새 창)
+          </Link>
+          를 확인해 주세요.
         </p>
       </ActionForm>
       <p className="auth-switch">

@@ -27,6 +27,15 @@ export default async function Write({
           <p>오늘의 이야기, 다현에게 전하고 싶은 마음을 남겨 주세요.</p>
         </div>
       </div>
+      <aside className="write-rules-reminder" aria-label="게시물 작성 안내">
+        <p>
+          사진·영상은 공유 권한과 출처를 확인해 주세요. AI 창작물은 제목과 본문에
+          제작 사실·콘텐츠 종류·제작자를 표시하고, 개인정보는 올리지 않습니다.
+        </p>
+        <Link href="/rules" target="_blank" rel="noreferrer">
+          운영 규정(안) 확인 (새 창) →
+        </Link>
+      </aside>
       <ActionForm
         action={publishPost}
         submit="글 등록하기"

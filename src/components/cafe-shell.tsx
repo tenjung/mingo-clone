@@ -169,7 +169,7 @@ export async function CafeShell({ children }: { children: ReactNode }) {
                   <br />
                   따뜻한 이야기를 나눠요.
                 </p>
-                <Link href="/about">
+                <Link href="/rules">
                   우리 카페 약속 <ArrowUpRight size={12} />
                 </Link>
               </div>
@@ -188,6 +188,7 @@ export async function CafeShell({ children }: { children: ReactNode }) {
             {cafe.artist}을 진심으로 응원하는 찐팬들이 함께 만드는 공간입니다.
           </p>
           <Link href="/about">카페 이용 안내</Link>
+          <Link href="/rules">운영 규정(안)</Link>
           <span>다현의 노래와 함께하는 우리.</span>
         </footer>
       </div>

@@ -98,7 +98,7 @@ export const writableBoards = boards.filter(
   (b) => b.id !== "all" && b.id !== "notice",
 );
 
-export type NavigationId = BoardId | "calendar" | "live" | "broadcast";
+export type NavigationId = BoardId | "calendar" | "live" | "broadcast" | "rules";
 export interface NavigationItem {
   id: NavigationId;
   label: string;
@@ -110,7 +110,12 @@ function boardItem(id: BoardId): NavigationItem {
 export const navigationGroups: { label: string; items: NavigationItem[] }[] = [
   {
     label: "찐팬카페 안내",
-    items: [boardItem("notice"), boardItem("welcome"), boardItem("question")],
+    items: [
+      boardItem("notice"),
+      { id: "rules", label: "운영 규정(안)", href: "/rules" },
+      boardItem("welcome"),
+      boardItem("question"),
+    ],
   },
   {
     label: "소식 · 일정",
