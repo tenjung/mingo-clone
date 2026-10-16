@@ -22,3 +22,11 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.next/
+out/
+.env*
+!.env.example
+*.tsbuildinfo
+
+.artifacts/

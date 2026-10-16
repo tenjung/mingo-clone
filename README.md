@@ -1,73 +1,76 @@
-# React + TypeScript + Vite
+# 트롯 요정 김다현 찐팬카페
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+가수 **김다현**을 진심으로 응원하는 찐팬 커뮤니티. 기존 `tenjung/mingo-clone`의 Git 이력을 그대로 가져오고, Vite SPA를 Next.js App Router로 전환했습니다.
 
-Currently, two official plugins are available:
+## 로컬 실행
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Node.js 22.18 이상을 사용합니다. Next.js 자체 최소 버전은 20.9이지만, 이 저장소의 테스트는 Node의 TypeScript 실행 기능을 사용합니다.
 
-## React Compiler
-
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+npm ci
+cp .env.example .env.local
+# .env.local에 기존 Supabase 프로젝트의 URL과 공개 anon key를 입력
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+주소: http://localhost:3000
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+현재 작업 폴더에는 기존 공개 설정을 옮긴 `.env.local`이 이미 있습니다. 기존 `.env`와 `.env.local`은 Git 추적에서 제외했습니다. 서비스 역할 키는 사용하지 않습니다.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```sh
+npm test
+npm run typecheck
+npm run build
+npm start
 ```
+
+## 화면과 기능
+
+- 상단 카페 대문, 왼쪽 카페 정보와 게시판 메뉴, 오른쪽 본문
+- 모바일에서 펼치는 게시판 메뉴
+- 찐팬카페 안내: 카페 공지, 가입인사, 질문·이용 문의
+- 소식·일정: 다현 소식·기사, 전체 일정 달력, 공연·행사 일정, 방송 일정, 일정 제보
+- 함께하는 찐팬: 투표·스밍 응원, 공연·방송 후기, 찐팬 자유게시판, 다현에게
+- 사진·영상: 사진첩, 무대·방송 영상
+- 게시글 제목 검색, 12개 단위 페이지 이동, 게시글 상세
+- Supabase 이메일·Google 로그인, 회원가입·로그아웃, 쿠키 기반 서버 인증
+- 로그인 후 새 글 등록, 사진 첨부, 본인 글 삭제
+- 기존 `topics` 테이블의 게시글 ID와 BlockNote JSON 본문 텍스트 호환
+- 한국 시간 기준 일정 달력·목록, 공연·행사/방송 필터, 월 이동, 공식 원문 바로가기
+- 실제 작성된 카페 기본 안내를 공지 영역에 연결
+
+대문 사진은 [매일경제 기사](https://www.mk.co.kr/jp/musics/11027670)에 게재된 그레인엔터테인먼트 제공 홍보 사진입니다. 이미지와 출처는 카페 이용 안내에도 연결했습니다. 꽃과 정원은 로컬 SVG입니다.
+
+## 현재 확인된 제한
+
+2026-10-16 확인 시 저장소의 기존 Supabase 호스트는 DNS에서 조회되지 않았습니다. 프로젝트가 삭제되었는지, 일시 정지되었는지는 **확인 불가**입니다.
+
+따라서 실제 계정 로그인·가입, 기존 게시글 조회, 사진 업로드·글 등록·삭제의 원격 성공 여부는 검증하지 못했습니다. 화면 이동, 비회원 글쓰기의 로그인 연결, 검색어 유지, 달력 월 이동, 반응형 화면과 빌드·타입 검사는 검증했습니다. 정상 Supabase 설정이 있어야 실제 커뮤니티 기능을 사용할 수 있습니다.
+
+일정은 `src/data/schedules.ts`의 확인된 자료를 홈과 달력·목록에서 함께 읽습니다. 현재 확인 가능한 공개 메뉴에서 일정 원문 게시판 주소를 연결했으며, 참고 카페의 개별 공지 본문은 403 응답으로 열람하지 못해 실제 일정을 임의로 입력하지 않았습니다. 일정 제보는 일반 게시글로 받고, 관리자가 원문을 확인한 뒤 데이터 파일에 반영합니다. 관리자 승인 UI나 자동 수집은 포함하지 않습니다. 가짜 회원 수·조회 수·댓글 수·활동 기록도 표시하지 않습니다. 댓글·좋아요·등업·관리자 페이지는 이번 범위에 포함되지 않습니다. 기존 Google OAuth 로그인도 유지하고 `/auth/callback`에서 PKCE 코드 교환을 처리합니다. 실제 제공자 설정과 성공 여부는 원격 연결 복구 후 확인해야 합니다.
+
+기존 프로필·수정 페이지는 실제 구현이 없던 화면입니다. 이전 URL은 안내 또는 글 상세로 이동하도록 연결했습니다. 기존 BlockNote의 복잡한 서식·본문 내 미디어까지 복원하는 편집기는 포함하지 않으며, 본문 텍스트와 첨부 사진을 표시합니다.
+
+## 구조
+
+```text
+src/app/                  서버 페이지와 라우트
+src/components/           카페 레이아웃·표시·최소 클라이언트 상호작용
+src/application/          로그인·글 등록·삭제 Server Actions
+src/domain/               카페 설정·게시판 계약·본문 변환
+src/lib/repositories/     Supabase 게시글 읽기
+src/lib/supabase/         서버 클라이언트와 환경 설정
+src/proxy.ts              인증 쿠키 갱신
+```
+
+조회는 요청 안에서 React `cache`로 중복 제거합니다. 계정별 정보가 섞이지 않도록 공유 캐시를 사용하지 않습니다. Supabase의 자동 GET 재시도를 끄고, 사용자에게 명시적인 재시도 버튼을 제공합니다. 쓰기 후 `revalidatePath`로 화면을 갱신합니다.
+
+[설계·검증 기록](docs/redesign-plan.md) · [Supabase 연결 계약](docs/supabase-setup.md)
+
+## 일정 자료와 메뉴 선정
+
+[김다현 공식 팬카페](https://m.cafe.daum.net/dahyun0223)의 공개 메뉴에서 일정 게시·캘린더, 공연 상세 공지, 방송 후기, 질문·답변, 투표·스밍, 사진·영상을 확인했다. 우리 카페에는 관련 기능을 네 그룹으로 합쳐 반영했다. 게시물 본문·회원 데이터는 복사하지 않았다. 등업, 후원·정산, 굿즈·버스 신청, 운영진 전용 메뉴는 해당 운영 체계가 없는 현재 카페에서 제공하지 않는다.
+
+일정 원문은 공식 팬카페의 스케줄 게시판 `DR1U`, 공연 상세 공지 `DTyt`로 연결한다. 해당 게시글은 로그인·회원 등급에 따라 열람이 제한될 수 있다.
+
+확인된 일정을 추가할 때는 `src/data/schedules.ts`에 `ScheduleEntry` 형식으로 입력한다. `id`, `title`, `type`(`live` 또는 `broadcast`), `date`(`YYYY-MM-DD`), `sourceUrl`(주최 측·공식 원문 HTTPS 주소)은 필수다. `time`(`HH:mm`, 한국 시간), `venue`는 확인된 경우에만 넣는다. 이 파일은 서버 Repository에서 읽으므로 공유 DB나 외부 API 비용을 추가하지 않는다. 수정 후 빌드·배포하면 홈의 다가오는 일정과 유형별 달력·목록이 함께 갱신된다.
